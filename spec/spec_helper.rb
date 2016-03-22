@@ -1,7 +1,4 @@
 require 'rspec'
-require 'rspec/collection_matchers'
-require 'rspec/its'
-require 'timecop'
 
 require './lib/pheme'
 
