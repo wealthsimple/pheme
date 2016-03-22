@@ -18,7 +18,7 @@ end
 
 def use_default_configuration!
   Pheme.configure do |config|
-    config.sqs_client = Aws::SQS::Client.new
-    config.sns_client = Aws::SNS::Client.new
+    config.sqs_client = double
+    config.sns_client = double
   end
 end
