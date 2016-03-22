@@ -1,10 +1,9 @@
 class ExamplePublisher < Pheme::TopicPublisher
   def publish_events
-    1.upto(3) do |id|
+    2.times do |n|
       publish({
-        id: "id-#{id}",
-        message: "OK",
-        sent_at: Time.now,
+        id: "id-#{n}",
+        status: "complete",
       })
     end
   end
