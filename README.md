@@ -1,4 +1,4 @@
-# pheme [![Circle CI](https://circleci.com/gh/wealthsimple/pheme.svg?style=svg)](https://circleci.com/gh/wealthsimple/pheme)
+# pheme [![Circle CI](https://circleci.com/gh/wealthsimple/pheme.svg?style=svg)](https://circleci.com/gh/wealthsimple/pheme) [![](https://img.shields.io/gem/v/pheme.svg)](https://rubygems.org/gems/pheme)
 
 Ruby SNS publisher + SQS poller & message handler
 
