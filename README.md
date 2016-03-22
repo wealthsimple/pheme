@@ -13,8 +13,9 @@ gem 'pheme'
 # Initializer
 aws_config = {
   credentials: Aws::Credentials.new('YOUR_ACCESS_KEY_ID', 'YOUR_SECRET_ACCESS_KEY'),
-  region: 'us-east-1',
+  region: 'us-east-1', # Enter your AWS region here
 }
+Aws.config.update(aws_config)
 AWS_SNS_CLIENT = Aws::SNS::Client.new(aws_config)
 AWS_SQS_CLIENT = Aws::SQS::Client.new(aws_config)
 
