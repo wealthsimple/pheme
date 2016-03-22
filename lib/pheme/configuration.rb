@@ -16,8 +16,12 @@ module Pheme
   end
 
   class Configuration
-    ATTRIBUTES = [:sns_client, :sqs_client]
+    ATTRIBUTES = [:sns_client, :sqs_client, :logger]
     attr_accessor *ATTRIBUTES
+
+    def initialize
+      @logger ||= Logger.new(STDOUT)
+    end
 
     def validate!
       ATTRIBUTES.each do |attribute|

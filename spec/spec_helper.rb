@@ -20,5 +20,6 @@ def use_default_configuration!
   Pheme.configure do |config|
     config.sqs_client = double
     config.sns_client = double
+    config.logger = Logger.new(nil)
   end
 end

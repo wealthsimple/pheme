@@ -4,8 +4,9 @@ describe Pheme::MessageHandler do
   subject { ExampleMessageHandler.new(message: message) }
 
   describe "#handle" do
-    it "handles the message without raising an error" do
-      expect { subject.handle }.not_to raise_error
+    it "handles the message correctly" do
+      expect(Pheme).to receive(:log).with(:info, "Done")
+      subject.handle
     end
   end
 end

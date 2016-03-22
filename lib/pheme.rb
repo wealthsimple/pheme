@@ -1,8 +1,10 @@
 require 'active_support/all'
 require 'recursive-open-struct'
 require 'aws-sdk'
+require 'securerandom'
 
 require 'pheme/version'
 require 'pheme/configuration'
+require 'pheme/logger'
 require 'pheme/topic_publisher'
 require 'pheme/message_handler'

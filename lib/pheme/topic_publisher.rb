@@ -11,7 +11,7 @@ module Pheme
     end
 
     def publish(message)
-      puts "publishing to #{topic_arn}: #{message}"
+      Pheme.log(:info, "Publishing to #{topic_arn}: #{message}")
       Pheme.configuration.sns_client.publish(topic_arn: topic_arn, message: message.to_json)
     end
   end
