@@ -9,8 +9,8 @@ Gem::Specification.new do |gem|
   gem.version       = Pheme::VERSION
   gem.authors       = ["Peter Graham"]
   gem.email         = ["peter@wealthsimple.com"]
-  gem.description   = %q{}
-  gem.summary       = %q{}
+  gem.description   = %q{Ruby AWS SNS publisher + SQS poller & message handler}
+  gem.summary       = %q{Ruby SNS publisher + SQS poller & message handler}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
