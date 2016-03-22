@@ -18,9 +18,8 @@ module Pheme
       Pheme.log(:info, "Long-polling for messages on #{queue_url}")
       with_optional_connection_pool_block do
         queue_poller.poll(poller_configuration) do |message|
-          message_body = parse_message(message)
           begin
-            handle(message_body)
+            handle(parse_message(message))
             queue_poller.delete_message(message)
           rescue => e
             Pheme.log(:error, "Exception: #{e.inspect}")
@@ -38,7 +37,7 @@ module Pheme
       RecursiveOpenStruct.new(parsed_body, recurse_over_arrays: true)
     end
 
-    def handle(message_struct)
+    def handle(message)
       raise NotImplementedError
     end
 
