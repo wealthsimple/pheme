@@ -9,7 +9,6 @@ module Pheme
       @poller_configuration = poller_configuration.merge({
         wait_time_seconds: 10, # amount of time a long polling receive call can wait for a mesage before receiving a empty response (which will trigger another polling request)
         idle_timeout: 20, # disconnects poller after 20 seconds of idle time
-        visibility_timeout: 30, # length of time in seconds that this message will not be visible to other receiving components
         skip_delete: true, # manually delete messages
       })
     end
