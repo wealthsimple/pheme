@@ -10,6 +10,20 @@ describe Pheme::QueuePoller do
     allow(Aws::SQS::QueuePoller).to receive(:new) { poller }
   end
 
+  describe ".new" do
+    context "when initialized with valid params" do
+      it "does not raise an error" do
+        expect { ExampleQueuePoller.new(queue_url: "queue_url") }.not_to raise_error
+      end
+    end
+
+    context "when initialized with a nil queue_url" do
+      it "raises an ArgumentError" do
+        expect { ExampleQueuePoller.new(queue_url: nil) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
   describe "#poll" do
     before(:each) do
       module ActiveRecord

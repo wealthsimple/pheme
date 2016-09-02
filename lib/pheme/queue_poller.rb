@@ -3,6 +3,7 @@ module Pheme
     attr_accessor :queue_url, :queue_poller, :connection_pool_block, :poller_configuration
 
     def initialize(queue_url:, connection_pool_block: false, poller_configuration: {})
+      raise ArgumentError, "must specify non-nil queue_url" unless queue_url.present?
       @queue_url = queue_url
       @queue_poller = Aws::SQS::QueuePoller.new(queue_url)
       @connection_pool_block = connection_pool_block
