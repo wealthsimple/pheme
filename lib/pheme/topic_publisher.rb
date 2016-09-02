@@ -3,6 +3,7 @@ module Pheme
     attr_accessor :topic_arn
 
     def initialize(topic_arn:)
+      raise ArgumentError, "must specify non-nil topic_arn" unless topic_arn.present?
       @topic_arn = topic_arn
     end
 
