@@ -25,7 +25,7 @@ module Pheme
           rescue => e
             Pheme.log(:error, "Exception: #{e.inspect}")
             Pheme.log(:error, e.backtrace.join("\n"))
-            Pheme.rollbar.error(e, "#{self.class} failed to process message", data)
+            Pheme.rollbar(e, "#{self.class} failed to process message", data)
           end
         end
       end
