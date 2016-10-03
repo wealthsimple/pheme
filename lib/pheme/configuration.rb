@@ -16,7 +16,7 @@ module Pheme
   end
 
   class Configuration
-    ATTRIBUTES = [:sns_client, :sqs_client, :logger]
+    ATTRIBUTES = [:sns_client, :sqs_client, :logger, :rollbar]
     attr_accessor *ATTRIBUTES
 
     def initialize

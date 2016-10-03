@@ -18,12 +18,14 @@ module Pheme
       Pheme.log(:info, "Long-polling for messages on #{queue_url}")
       with_optional_connection_pool_block do
         queue_poller.poll(poller_configuration) do |message|
+          data = parse_message(message)
           begin
-            handle(parse_message(message))
+            handle(data)
             queue_poller.delete_message(message)
           rescue => e
             Pheme.log(:error, "Exception: #{e.inspect}")
             Pheme.log(:error, e.backtrace.join("\n"))
+            Pheme.rollbar(e, "#{self.class} failed to process message", data)
           end
         end
       end
