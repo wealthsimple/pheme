@@ -1,5 +1,3 @@
-require 'smarter_csv'
-
 module Pheme
   class QueuePoller
     attr_accessor :queue_url, :queue_poller, :connection_pool_block, :csv, :poller_configuration
