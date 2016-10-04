@@ -1,12 +1,13 @@
 module Pheme
   class QueuePoller
-    attr_accessor :queue_url, :queue_poller, :connection_pool_block, :poller_configuration
+    attr_accessor :queue_url, :queue_poller, :connection_pool_block, :csv, :poller_configuration
 
-    def initialize(queue_url:, connection_pool_block: false, poller_configuration: {})
+    def initialize(queue_url:, connection_pool_block: false, csv: false, poller_configuration: {})
       raise ArgumentError, "must specify non-nil queue_url" unless queue_url.present?
       @queue_url = queue_url
       @queue_poller = Aws::SQS::QueuePoller.new(queue_url)
       @connection_pool_block = connection_pool_block
+      @csv = csv
       @poller_configuration = {
         wait_time_seconds: 10, # amount of time a long polling receive call can wait for a mesage before receiving a empty response (which will trigger another polling request)
         idle_timeout: 20, # disconnects poller after 20 seconds of idle time
@@ -35,8 +36,13 @@ module Pheme
     def parse_message(message)
       Pheme.log(:info, "Received JSON payload: #{message.body}")
       body = JSON.parse(message.body)
-      parsed_body = JSON.parse(body['Message'])
-      RecursiveOpenStruct.new(parsed_body, recurse_over_arrays: true)
+      if csv
+        parsed_body = SmarterCSV.process(StringIO.new(body['Message']))
+        parsed_body.map{ |item| RecursiveOpenStruct.new(item, recurse_over_arrays: true) }
+      else
+        parsed_body = JSON.parse(body['Message'])
+        RecursiveOpenStruct.new(parsed_body, recurse_over_arrays: true)
+      end
     end
 
     def handle(message)

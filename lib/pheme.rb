@@ -2,6 +2,7 @@ require 'active_support/all'
 require 'recursive-open-struct'
 require 'aws-sdk'
 require 'securerandom'
+require 'smarter_csv'
 
 require 'pheme/version'
 require 'pheme/configuration'
