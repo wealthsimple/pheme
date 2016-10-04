@@ -3,6 +3,7 @@ describe Pheme::QueuePoller do
   let(:poller) do
     poller = double
     allow(poller).to receive(:poll).with(kind_of(Hash))
+    allow(poller).to receive(:parse_message)
     poller
   end
   before(:each) do
@@ -20,6 +21,33 @@ describe Pheme::QueuePoller do
     context "when initialized with a nil queue_url" do
       it "raises an ArgumentError" do
         expect { ExampleQueuePoller.new(queue_url: nil) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#parse_message" do
+    context "with JSON message" do
+      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+
+      let!(:message) { OpenStruct.new({
+        body: '{"Message":"{\"test\":\"test\"}"}'
+      })}
+
+      it 'should parse the message correctly' do
+        expect(subject.parse_message(message).test).to eq("test")
+      end
+    end
+
+    context "with CSV message" do
+      subject { ExampleQueuePoller.new(queue_url: queue_url, csv: true) }
+
+      let!(:message) { OpenStruct.new({
+        body:'{"Message":"test,test2\nvalue,value2\nvalue3,value4"}'
+      })}
+
+      it 'should parse the message correctly' do
+        expect(subject.parse_message(message)).to be_a(Array)
+        expect(subject.parse_message(message).count).to eq(2)
       end
     end
   end
