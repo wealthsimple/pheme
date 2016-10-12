@@ -38,14 +38,22 @@ module Pheme
       body = JSON.parse(message.body)
       case format
       when :csv
-        parsed_body = SmarterCSV.process(StringIO.new(body['Message']))
-        parsed_body.map{ |item| RecursiveOpenStruct.new(item, recurse_over_arrays: true) }
+        parse_csv(body['Message'])
       when :json
-        parsed_body = JSON.parse(body['Message'])
-        RecursiveOpenStruct.new(parsed_body, recurse_over_arrays: true)
+        parse_json(body['Message'])
       else
-        raise "Error: invalid message format"
+        raise ArgumentError.new("Unknown format #{format}. Valid formats: :csv, :json.")
       end
+    end
+
+    def parse_csv(message_contents)
+      parsed_body = SmarterCSV.process(StringIO.new(message_contents))
+      parsed_body.map{ |item| RecursiveOpenStruct.new(item, recurse_over_arrays: true) }
+    end
+
+    def parse_json(message_contents)
+      parsed_body = JSON.parse(message_contents)
+      RecursiveOpenStruct.new(parsed_body, recurse_over_arrays: true)
     end
 
     def handle(message)
