@@ -39,7 +39,7 @@ describe Pheme::QueuePoller do
     end
 
     context "with CSV message" do
-      subject { ExampleQueuePoller.new(queue_url: queue_url, csv: true) }
+      subject { ExampleQueuePoller.new(queue_url: queue_url, format: :csv) }
 
       let!(:message) { OpenStruct.new({
         body:'{"Message":"test,test2\nvalue,value2\nvalue3,value4"}'
@@ -48,6 +48,18 @@ describe Pheme::QueuePoller do
       it 'should parse the message correctly' do
         expect(subject.parse_message(message)).to be_a(Array)
         expect(subject.parse_message(message).count).to eq(2)
+      end
+    end
+
+    context "with unknown message format" do
+      subject { ExampleQueuePoller.new(queue_url: queue_url, format: :invalid_format) }
+
+      let!(:message) { OpenStruct.new({
+        body:'{"Message":"test,test2\nvalue,value2\nvalue3,value4"}'
+      })}
+
+      it 'should raise an error' do
+        expect{ subject.parse_message(message) }.to raise_error
       end
     end
   end
