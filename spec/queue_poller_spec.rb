@@ -4,6 +4,7 @@ describe Pheme::QueuePoller do
     poller = double
     allow(poller).to receive(:poll).with(kind_of(Hash))
     allow(poller).to receive(:parse_message)
+    allow(poller).to receive(:before_request)
     poller
   end
   before(:each) do
@@ -21,6 +22,12 @@ describe Pheme::QueuePoller do
     context "when initialized with a nil queue_url" do
       it "raises an ArgumentError" do
         expect { ExampleQueuePoller.new(queue_url: nil) }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when initialized with max_messages" do
+      it "should set max_messages" do
+        expect(ExampleQueuePoller.new(queue_url: "queue_url", max_messages: 5).max_messages).to eq(5)
       end
     end
   end
