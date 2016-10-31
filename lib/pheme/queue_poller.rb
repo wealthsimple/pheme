@@ -15,9 +15,11 @@ module Pheme
         skip_delete: true, # manually delete messages
       }.merge(poller_configuration || {})
 
-      queue_poller.before_request do |stats|
-        throw :stop_polling if stats.received_message_count >= max_messages
-      end  if max_messages
+      if max_messages
+        queue_poller.before_request do |stats|
+          throw :stop_polling if stats.received_message_count >= max_messages
+        end
+      end
     end
 
     def poll
