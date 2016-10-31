@@ -16,9 +16,8 @@ module Pheme
       }.merge(poller_configuration || {})
 
       queue_poller.before_request do |stats|
-        max_messages_reached = max_messages && stats.received_message_count >= max_messages
-        throw :stop_polling if max_messages_reached
-      end
+        throw :stop_polling if stats.received_message_count >= max_messages
+      end  if max_messages
     end
 
     def poll
