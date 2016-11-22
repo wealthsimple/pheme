@@ -73,12 +73,13 @@ describe Pheme::QueuePoller do
     context "with array JSON message" do
       subject { ExampleQueuePoller.new(queue_url: queue_url).parse_message(message) }
       let!(:message) { OpenStruct.new({
-        body: '{"Message":"[{\"test\":\"test\"}]"}'
+        body: '{"Message":"[[{\"test\":\"test\"}]]"}'
       })}
       it 'should parse the message correctly' do
-        expect(subject.first.test).to eq("test")
+        expect(subject.first.first.test).to eq("test")
         expect(subject).to be_a Array
-        expect(subject.first).to be_a RecursiveOpenStruct
+        expect(subject.first).to be_a Array
+        expect(subject.first.first).to be_a RecursiveOpenStruct
       end
     end
   end
