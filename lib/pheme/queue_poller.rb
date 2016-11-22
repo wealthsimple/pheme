@@ -60,7 +60,11 @@ module Pheme
 
     def parse_json(message_contents)
       parsed_body = JSON.parse(message_contents)
-      RecursiveOpenStruct.new(parsed_body, recurse_over_arrays: true)
+      if parsed_body.instance_of? Array
+        parsed_body.map{ |item| RecursiveOpenStruct.new(item, recurse_over_arrays: true) }
+      else
+        RecursiveOpenStruct.new(parsed_body, recurse_over_arrays: true)
+      end
     end
 
     def handle(message)
