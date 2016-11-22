@@ -30,12 +30,6 @@ describe Pheme::QueuePoller do
         expect(ExampleQueuePoller.new(queue_url: "queue_url", max_messages: 5).max_messages).to eq(5)
       end
     end
-
-    context "when initialized with with_recursive_open_struct" do
-      it "should set with_recursive_open_struct" do
-        expect(ExampleQueuePoller.new(queue_url: "queue_url", with_recursive_open_struct: false).with_recursive_open_struct).to eq(false)
-      end
-    end
   end
 
   describe "#parse_message" do
@@ -76,16 +70,15 @@ describe Pheme::QueuePoller do
       end
     end
 
-    context "with no recursive open struct" do
-      subject { ExampleQueuePoller.new(queue_url: queue_url, with_recursive_open_struct: false).parse_message(message) }
+    context "with array JSON message" do
+      subject { ExampleQueuePoller.new(queue_url: queue_url).parse_message(message) }
       let!(:message) { OpenStruct.new({
         body: '{"Message":"[{\"test\":\"test\"}]"}'
       })}
       it 'should parse the message correctly' do
-        expect(subject.first["test"]).to eq("test")
+        expect(subject.first.test).to eq("test")
         expect(subject).to be_a Array
-        expect(subject.first).to be_a Hash
-        expect(subject).not_to be_a RecursiveOpenStruct
+        expect(subject.first).to be_a RecursiveOpenStruct
       end
     end
   end
