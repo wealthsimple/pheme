@@ -29,5 +29,20 @@ describe Pheme::TopicPublisher do
       })
       subject.publish_events
     end
+
+    context 'with string message' do
+      let(:topic_arn) { "arn:aws:sns:anything" }
+      let(:message) { "don't touch my string" }
+
+      subject {Pheme::TopicPublisher.new(topic_arn: topic_arn)}
+
+      it "publishes unchanged message" do
+        expect(Pheme.configuration.sns_client).to receive(:publish).with({
+                                                                           topic_arn: topic_arn,
+                                                                           message: message,
+                                                                         })
+        subject.publish(message)
+      end
+    end
   end
 end

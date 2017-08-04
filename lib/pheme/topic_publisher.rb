@@ -13,7 +13,12 @@ module Pheme
 
     def publish(message)
       Pheme.log(:info, "Publishing to #{topic_arn}: #{message}")
-      Pheme.configuration.sns_client.publish(topic_arn: topic_arn, message: message.to_json)
+      Pheme.configuration.sns_client.publish(topic_arn: topic_arn, message: serialize(message))
+    end
+
+    def serialize(message)
+      return message if message.is_a? String
+      message.to_json
     end
   end
 end
