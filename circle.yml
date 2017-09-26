@@ -1,13 +1,21 @@
 machine:
   ruby:
-    version: 2.2.2
+    version: 2.4.2
 dependencies:
   override:
     - 'rvm-exec 2.2.2 bundle install'
-    - 'rvm-exec 2.3.0 bundle install'
+    - 'rvm --create 2.2.2@aws-sdk-core-v2 && rvm-exec 2.2.2@aws-sdk-core-v2 gem install bundler --no-ri && bundle install --gemfile=Gemfile.aws-sdk-core-v2'
+    - 'rvm-exec 2.3.5 bundle install'
+    - 'rvm --create 2.3.5@aws-sdk-core-v2 && rvm-exec 2.3.5@aws-sdk-core-v2 gem install bundler --no-ri && bundle install --gemfile=Gemfile.aws-sdk-core-v2'
+    - 'rvm-exec 2.4.2 bundle install'
+    - 'rvm --create 2.4.2@aws-sdk-core-v2 && rvm-exec 2.4.2@aws-sdk-core-v2 gem install bundler --no-ri && bundle install --gemfile=Gemfile.aws-sdk-core-v2'
   post:
     - bundle exec bundle-audit update && bundle exec bundle-audit check
 test:
   override:
     - 'rvm-exec 2.2.2 bundle exec rspec'
-    - 'rvm-exec 2.3.0 bundle exec rspec'
+    - 'rvm-exec 2.2.2@aws-sdk-core-v2 bundle exec rspec'
+    - 'rvm-exec 2.3.5 bundle exec rspec'
+    - 'rvm-exec 2.3.5@aws-sdk-core-v2 bundle exec rspec'
+    - 'rvm-exec 2.4.2 bundle exec rspec'
+    - 'rvm-exec 2.4.2@aws-sdk-core-v2 bundle exec rspec'
