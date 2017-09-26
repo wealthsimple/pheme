@@ -7,7 +7,5 @@ end
 gemspec
 
 group :test do
-  gem 'aws-sdk-core', '~> 3'
-  gem 'aws-sdk-sqs'
-  gem 'aws-sdk-sns'
+  gem 'aws-sdk-core', '~> 2'
 end
