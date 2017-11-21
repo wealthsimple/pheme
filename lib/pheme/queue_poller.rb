@@ -30,6 +30,8 @@ module Pheme
           begin
             handle(data)
             queue_poller.delete_message(message)
+          rescue SignalException => e
+            throw :stop_polling
           rescue => e
             Pheme.log(:error, "Exception: #{e.inspect}")
             Pheme.log(:error, e.backtrace.join("\n"))
