@@ -1,3 +1,5 @@
+require_relative 'example_queue_poller'
+
 #
 # Example for pollers that consume internal AWS Events,
 # like S3 notifications, CloudWatch events, etc.
