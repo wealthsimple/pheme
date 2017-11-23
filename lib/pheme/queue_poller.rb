@@ -44,15 +44,21 @@ module Pheme
 
     def parse_message(message)
       Pheme.log(:info, "Received JSON payload: #{message.body}")
-      body = JSON.parse(message.body)
+      content = get_content(JSON.parse(message.body))
       case format
       when :csv
-        parse_csv(body['Message'])
+        parse_csv(content)
       when :json
-        parse_json(body['Message'])
+        parse_json(content)
       else
-        raise ArgumentError.new("Unknown format #{format}. Valid formats: :csv, :json.")
+        method_name = "parse_#{format}".to_sym
+        raise ArgumentError.new("Unknown format #{format}") unless self.respond_to?(method_name)
+        self.__send__(method_name, content)
       end
+    end
+
+    def get_content(body)
+      body['Message']
     end
 
     def parse_csv(message_contents)
