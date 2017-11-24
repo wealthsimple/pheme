@@ -5,7 +5,7 @@ describe Pheme::MessageHandler do
 
   describe "#handle" do
     it "handles the message correctly" do
-      expect(Pheme).to receive(:log).with(:info, "Done")
+      expect(Pheme.logger).to receive(:info).with("Done")
       subject.handle
     end
   end

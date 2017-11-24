@@ -1,4 +1,7 @@
 require 'rspec'
+require 'rspec/its'
+require 'rspec/collection_matchers'
+require 'pp'
 
 require './lib/pheme'
 

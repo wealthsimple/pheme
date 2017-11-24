@@ -16,11 +16,12 @@ module Pheme
   end
 
   class Configuration
-    ATTRIBUTES = [:sns_client, :sqs_client, :logger, :rollbar]
+    ATTRIBUTES = %i[sns_client sqs_client logger rollbar].freeze
     attr_accessor *ATTRIBUTES
 
     def initialize
       @logger ||= Logger.new(STDOUT)
+      @logger = ActiveSupport::TaggedLogging.new(@logger) unless @logger.respond_to?(:tagged)
     end
 
     def validate!

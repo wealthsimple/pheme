@@ -1,16 +1,5 @@
 describe Pheme::QueuePoller do
   let(:queue_url) { "https://sqs.us-east-1.amazonaws.com/whatever" }
-  let(:poller) do
-    poller = double
-    allow(poller).to receive(:poll).with(kind_of(Hash))
-    allow(poller).to receive(:parse_message)
-    allow(poller).to receive(:before_request)
-    poller
-  end
-  before(:each) do
-    use_default_configuration!
-    allow(Aws::SQS::QueuePoller).to receive(:new) { poller }
-  end
 
   describe ".new" do
     context "when initialized with valid params" do
@@ -32,54 +21,59 @@ describe Pheme::QueuePoller do
     end
   end
 
-  describe "#parse_message" do
-    context "with JSON message" do
-      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+  describe "#extract_notification" do
+    let!(:queue_message) { OpenStruct.new(body: { Message: message }.to_json) }
+    subject { poller.extract_notification(queue_message) }
 
-      let!(:message) { OpenStruct.new({
-        body: '{"Message":"{\"test\":\"test\"}"}'
-      })}
+    context "message is JSON string" do
+      let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: :json) }
+      let!(:message) { { test: 'test' }.to_json }
 
-      it 'should parse the message correctly' do
-        expect(subject.parse_message(message).test).to eq("test")
-      end
+      its([:message, 'test']) { is_expected.to eq('test') }
+      its(['Message']) { is_expected.to eq(message) }
     end
 
-    context "with CSV message" do
-      subject { ExampleQueuePoller.new(queue_url: queue_url, format: :csv) }
-
-      let!(:message) { OpenStruct.new({
-        body:'{"Message":"test,test2\nvalue,value2\nvalue3,value4"}'
-      })}
-
-      it 'should parse the message correctly' do
-        expect(subject.parse_message(message)).to be_a(Array)
-        expect(subject.parse_message(message).count).to eq(2)
+    context "message is CSV string" do
+      let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: :csv) }
+      let(:expected_message) do
+        [
+          { test1: 'value1', test2: 'value2' },
+          { test1: 'value3', test2: 'value4' },
+        ]
       end
+      let(:message) do
+        [
+          %w[test1 test2].join(','),
+          %w[value1 value2].join(','),
+          %w[value3 value4].join(','),
+        ].join("\n")
+      end
+
+      its([:message]) { is_expected.to have(2).items }
+      its([:message]) do
+        is_expected.to eq(RecursiveOpenStruct.new({ wrapper: expected_message }, recurse_over_arrays: true).wrapper)
+      end
+      its(['Message']) { is_expected.to eq(message) }
     end
 
     context "with unknown message format" do
-      subject { ExampleQueuePoller.new(queue_url: queue_url, format: :invalid_format) }
+      let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: :invalid_format) }
+      let(:message) { 'unkonwn' }
 
-      let!(:message) { OpenStruct.new({
-        body:'{"Message":"test,test2\nvalue,value2\nvalue3,value4"}'
-      })}
-
-      it 'should raise an error' do
-        expect{ subject.parse_message(message) }.to raise_error
+      it "should raise error" do
+        expect{ subject }.to raise_error
       end
     end
 
     context "with array JSON message" do
-      subject { ExampleQueuePoller.new(queue_url: queue_url).parse_message(message) }
-      let!(:message) { OpenStruct.new({
-        body: '{"Message":"[[{\"test\":\"test\"}]]"}'
-      })}
+      let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: :json) }
+      let(:message) { [[{ test: 'test' }]].to_json }
+
       it 'should parse the message correctly' do
-        expect(subject.first.first.test).to eq("test")
-        expect(subject).to be_a Array
-        expect(subject.first).to be_a Array
-        expect(subject.first.first).to be_a RecursiveOpenStruct
+        expect(subject[:message]).to be_a(Array)
+        expect(subject[:message].first).to be_a(Array)
+        expect(subject[:message].first.first).to be_a(RecursiveOpenStruct)
+        expect(subject[:message].first.first.test).to eq('test')
       end
     end
   end
@@ -88,21 +82,24 @@ describe Pheme::QueuePoller do
     before(:each) do
       module ActiveRecord
         class Base
-          def self.connection_pool
-          end
+          def self.connection_pool; end
         end
       end
     end
 
     context "with connection pool block" do
       let(:mock_connection_pool) { double }
+      subject { ExampleQueuePoller.new(queue_url: queue_url, connection_pool_block: true) }
+      let(:message) { { status: 'complete' } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification' } }
+      let(:queue_message) { RecursiveOpenStruct.new(body: notification.to_json) }
 
       before(:each) do
         allow(ActiveRecord::Base).to receive(:connection_pool) { mock_connection_pool }
         allow(mock_connection_pool).to receive(:with_connection).and_yield
+        allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
+        allow(subject.queue_poller).to receive(:delete_message).with(queue_message)
       end
-
-      subject { ExampleQueuePoller.new(queue_url: queue_url, connection_pool_block: true) }
 
       it "uses the connection pool block" do
         expect(mock_connection_pool).to receive(:with_connection)
@@ -112,6 +109,14 @@ describe Pheme::QueuePoller do
 
     context "without connection pool block" do
       subject { ExampleQueuePoller.new(queue_url: queue_url) }
+      let(:message) { { status: 'complete' } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification' } }
+      let(:queue_message) { RecursiveOpenStruct.new(body: notification.to_json) }
+
+      before(:each) do
+        allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
+        allow(subject.queue_poller).to receive(:delete_message).with(queue_message)
+      end
 
       it "does not call ActiveRecord" do
         expect(ActiveRecord::Base).not_to receive(:connection_pool)
@@ -120,64 +125,61 @@ describe Pheme::QueuePoller do
     end
 
     context "when a valid message is yielded" do
-      let(:message_body) do
+      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+      let(:message) { { id: "id-123", status: "complete" } }
+      let(:notification) do
         {
-          id: "id-123",
-          status: "complete",
+          'MessageId' => SecureRandom.uuid,
+          'Message' => message.to_json,
+          'Type' => 'Notification',
         }
       end
-      let(:message) do
-        message = double
-        allow(message).to receive(:body) do
-          {Message: message_body.to_json,}.to_json
-        end
-        message
-      end
-      before(:each) do
-        allow(poller).to receive(:poll).and_yield(message)
-      end
+      let(:queue_message) { RecursiveOpenStruct.new(body: notification.to_json) }
 
-      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+      before(:each) do
+        allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
+        allow(subject.queue_poller).to receive(:delete_message).with(queue_message)
+      end
 
       it "handles the message" do
-        expect(ExampleMessageHandler).to receive(:new).with(message: RecursiveOpenStruct.new(message_body))
+        expect(ExampleMessageHandler).to receive(:new).with(message: RecursiveOpenStruct.new(message))
         subject.poll
       end
 
       it "deletes the message from the queue" do
-        expect(poller).to receive(:delete_message).with(message)
+        expect(subject.queue_poller).to receive(:delete_message).with(queue_message)
         subject.poll
       end
     end
 
     context "when an invalid message is yielded" do
-      let(:message_body) do
+      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+      let(:message) { { id: "id-123", status: "unknown-abc" } }
+      let(:notification) do
         {
-          id: "id-123",
-          status: "unknown-abc",
+          'MessageId' => SecureRandom.uuid,
+          'Message' => message.to_json,
+          'Type' => 'Notification',
         }
       end
-      let(:message) do
-        message = double
-        allow(message).to receive(:body) do
-          {Message: message_body.to_json}.to_json
-        end
-        message
-      end
-      before(:each) do
-        allow(poller).to receive(:poll).and_yield(message)
-        allow(Pheme).to receive(:log)
-      end
+      let(:queue_message) { RecursiveOpenStruct.new(body: notification.to_json) }
 
-      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+      before(:each) do
+        allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
+        allow(subject.queue_poller).to receive(:delete).with(queue_message)
+        allow(Pheme.logger).to receive(:error)
+      end
 
       it "logs the error" do
         subject.poll
-        expect(Pheme).to have_received(:log).with(:error, "Exception: #<ArgumentError: Unknown message status: unknown-abc>")
+        expect(Pheme.logger).to have_received(:error) do |error|
+          expect(error).to be_a(ArgumentError)
+          expect(error.message).to eq('Unknown message status: unknown-abc')
+        end
       end
 
       it "does not delete the message from the queue" do
-        expect(poller).not_to receive(:delete_message)
+        expect(subject.queue_poller).not_to receive(:delete_message)
         subject.poll
       end
     end

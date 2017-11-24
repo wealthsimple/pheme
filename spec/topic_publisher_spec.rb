@@ -21,11 +21,11 @@ describe Pheme::TopicPublisher do
     it "publishes the correct events" do
       expect(Pheme.configuration.sns_client).to receive(:publish).with({
         topic_arn: "arn:aws:sns:whatever",
-        message: {id: "id-0", status: "complete"}.to_json,
+        message: { id: "id-0", status: "complete" }.to_json,
       })
       expect(Pheme.configuration.sns_client).to receive(:publish).with({
         topic_arn: "arn:aws:sns:whatever",
-        message: {id: "id-1", status: "complete"}.to_json,
+        message: { id: "id-1", status: "complete" }.to_json,
       })
       subject.publish_events
     end
@@ -34,13 +34,13 @@ describe Pheme::TopicPublisher do
       let(:topic_arn) { "arn:aws:sns:anything" }
       let(:message) { "don't touch my string" }
 
-      subject {Pheme::TopicPublisher.new(topic_arn: topic_arn)}
+      subject { Pheme::TopicPublisher.new(topic_arn: topic_arn) }
 
       it "publishes unchanged message" do
         expect(Pheme.configuration.sns_client).to receive(:publish).with({
-                                                                           topic_arn: topic_arn,
-                                                                           message: message,
-                                                                         })
+          topic_arn: topic_arn,
+          message: message,
+        })
         subject.publish(message)
       end
     end

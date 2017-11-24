@@ -4,4 +4,8 @@ module Pheme
     @tag ||= "pheme_#{SecureRandom.uuid}"
     @logger.tagged(@tag) { @logger.send(method, text) }
   end
+
+  def self.logger
+    configuration.logger
+  end
 end

@@ -23,36 +23,43 @@ module Pheme
     end
 
     def poll
-      Pheme.log(:info, "Long-polling for messages on #{queue_url}")
+      time_start = log_polling_start
+      messages_processed = 0
+      messages_received = 0
       with_optional_connection_pool_block do
-        queue_poller.poll(poller_configuration) do |message|
-          data = parse_message(message)
-          begin
-            handle(data)
-            queue_poller.delete_message(message)
-          rescue SignalException => e
-            throw :stop_polling
-          rescue => e
-            Pheme.log(:error, "Exception: #{e.inspect}")
-            Pheme.log(:error, e.backtrace.join("\n"))
-            Pheme.rollbar(e, "#{self.class} failed to process message", data)
+        queue_poller.poll(poller_configuration) do |queue_message|
+          notification = extract_notification(queue_message)
+          Pheme.logger.tagged(notification['MessageId']) do
+            begin
+              messages_received += 1
+              log_notification(notification)
+              handle(notification[:message])
+              queue_poller.delete_message(queue_message)
+              log_delete(notification)
+              messages_processed += 1
+            rescue SignalException
+              throw :stop_polling
+            rescue StandardError => e
+              Pheme.logger.error(e)
+              Pheme.rollbar(e, "#{self.class} failed to process message", notification)
+            end
           end
         end
       end
-      Pheme.log(:info, "Finished long-polling after #{@poller_configuration[:idle_timeout]} seconds.")
+      log_polling_end(time_start, messages_received, messages_processed)
     end
 
-    def parse_message(message)
-      Pheme.log(:info, "Received JSON payload: #{message.body}")
-      body = JSON.parse(message.body)
+    def extract_notification(queue_message)
+      notification = JSON.parse(queue_message.body)
       case format
       when :csv
-        parse_csv(body['Message'])
+        notification[:message] = parse_csv(notification['Message'])
       when :json
-        parse_json(body['Message'])
+        notification[:message] = parse_json(notification['Message'])
       else
-        raise ArgumentError.new("Unknown format #{format}. Valid formats: :csv, :json.")
+        raise ArgumentError, "Invalid format #{format}. Valid formats: :csv, :json"
       end
+      notification
     end
 
     def parse_csv(message_contents)
@@ -62,21 +69,67 @@ module Pheme
 
     def parse_json(message_contents)
       parsed_body = JSON.parse(message_contents)
-      RecursiveOpenStruct.new({wrapper: parsed_body}, recurse_over_arrays: true).wrapper
+      RecursiveOpenStruct.new({ wrapper: parsed_body }, recurse_over_arrays: true).wrapper
     end
 
-    def handle(message)
+    def handle(_message)
       raise NotImplementedError
     end
 
-  private
+    private
 
-    def with_optional_connection_pool_block(&blk)
+    def with_optional_connection_pool_block
       if connection_pool_block
-        ActiveRecord::Base.connection_pool.with_connection { blk.call }
+        ActiveRecord::Base.connection_pool.with_connection { yield }
       else
-        blk.call
+        yield
       end
+    end
+
+    def log_polling_start
+      time_start = Time.now
+      Pheme.logger.info({
+        message: "Start long-polling #{queue_url}",
+        queue_url: queue_url,
+        format: format,
+        max_messages: max_messages,
+        connection_pool_block: connection_pool_block,
+        poller_configuration: poller_configuration,
+      }.to_json)
+      time_start
+    end
+
+    def log_polling_end(time_start, messages_received, messages_processed)
+      time_end = Time.now
+      elapsed = time_end - time_start
+      Pheme.logger.info({
+        message: "Finished long-polling #{queue_url}, duration: #{elapsed.round(2)} seconds.",
+        queue_url: queue_url,
+        format: format,
+        messages_received: messages_received,
+        messages_processed: messages_processed,
+        duration: elapsed.round(2),
+        start_time: time_start.utc.iso8601,
+        end_time: time_end.utc.iso8601,
+      }.to_json)
+    end
+
+    def log_delete(notification)
+      Pheme.logger.info({
+        message: "Deleted #{notification['Type']} - #{notification['MessageId']}",
+        notification: notification.slice('Type', 'MessageId'),
+      }.to_json)
+    end
+
+    def log_notification(notification)
+      # we do this so that CSV doesn't get parsed into objects when logging which make it huge and not-copyable
+      payload = notification.except(:message)
+      payload['Message'] = notification[:message] if format == :json
+
+      Pheme.logger.info({
+        message: "Received #{notification['Type']} - #{notification['MessageId']}",
+        notification: payload,
+      }.to_json)
     end
   end
 end
