@@ -11,6 +11,8 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
+  ENV['AWS_REGION'] = 'us-east-1'
+
   config.before(:each) do
     Pheme.reset_configuration!
   end
