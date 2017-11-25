@@ -14,19 +14,6 @@ module Pheme
         body['Records']
       end
 
-      def log_notification(notification)
-        payload = notification.except(:message)
-
-        Pheme.logger.info({
-          message: "Received AWS-Event",
-          records: payload,
-        }.to_json)
-      end
-
-      def log_delete(_notification)
-        Pheme.logger.info
-      end
-
       def format
         :aws_event
       end
