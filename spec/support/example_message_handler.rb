@@ -2,9 +2,9 @@ class ExampleMessageHandler < Pheme::MessageHandler
   def handle
     case message.status
     when "complete"
-      Pheme.log(:info, "Done")
+      Pheme.logger.info("Done")
     when "rejected"
-      Pheme.log(:error, "Oops")
+      Pheme.logger.error("Oops")
     end
   end
 end
