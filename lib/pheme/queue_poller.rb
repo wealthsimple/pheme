@@ -53,21 +53,28 @@ module Pheme
     def parse_body(queue_message)
       message_body = JSON.parse(queue_message.body)
       raw_content = get_content(message_body)
+      body = get_metadata(message_body)
 
       case format
       when :csv
         parsed_content = parse_csv(raw_content)
+        body['Message'] = raw_content
       when :json
         parsed_content = parse_json(raw_content)
+        body['Message'] = parsed_content
       else
         method_name = "parse_#{format}".to_sym
         raise ArgumentError, "Unknown format #{format}" unless respond_to?(method_name)
         parsed_content = __send__(method_name, raw_content)
+        body['Records'] = parsed_content
       end
 
-      body = format == :csv ? raw_content : parsed_content
       log_message_received(queue_message, body)
       parsed_content
+    end
+
+    def get_metadata(message_body)
+      message_body.except('Message', 'Records')
     end
 
     def get_content(body)
