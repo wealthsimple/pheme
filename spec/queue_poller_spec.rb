@@ -27,7 +27,6 @@ describe Pheme::QueuePoller do
   let!(:queue_message) do
     OpenStruct.new(
       body: { Message: message }.to_json,
-      queue_url: queue_url,
       message_id: message_id,
     )
   end
@@ -100,7 +99,6 @@ describe Pheme::QueuePoller do
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
-          queue_url: queue_url,
           message_id: message_id,
         )
       end
@@ -125,7 +123,6 @@ describe Pheme::QueuePoller do
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
-          queue_url: queue_url,
           message_id: message_id,
         )
       end
@@ -154,7 +151,6 @@ describe Pheme::QueuePoller do
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
-          queue_url: queue_url,
           message_id: message_id,
         )
       end
@@ -188,7 +184,6 @@ describe Pheme::QueuePoller do
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
-          queue_url: queue_url,
           message_id: message_id,
         )
       end

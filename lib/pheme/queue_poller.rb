@@ -65,13 +65,8 @@ module Pheme
         parsed_content = __send__(method_name, raw_content)
       end
 
-      Pheme.logger.info({
-        message: "Received message #{queue_message.message_id}",
-        message_id: queue_message.message_id,
-        queue_url: queue_message.queue_url,
-        # if it's CSV data, let's log it non-parsed
-        body: format == :csv ? raw_content : parsed_content,
-      }.to_json)
+      body = format == :csv ? raw_content : parsed_content
+      log_message_received(queue_message, body)
       parsed_content
     end
 
@@ -134,20 +129,18 @@ module Pheme
 
     def log_delete(queue_message)
       Pheme.logger.info({
-        message: "Deleted #{queue_message.message_id}",
+        message: "Deleted message #{queue_message.message_id}",
         message_id: queue_message.message_id,
-        queue_url: queue_message.queue_url,
+        queue_url: queue_url,
       }.to_json)
     end
 
-    def log_queue_message(_queue_message, notification)
-      # we do this so that CSV doesn't get parsed into objects when logging which make it huge and not-copyable
-      payload = notification.except(:message)
-      payload['Message'] = notification[:message] if format == :json
-
+    def log_message_received(queue_message, body)
       Pheme.logger.info({
-        message: "Received #{notification['Type']} - #{notification['MessageId']}",
-        notification: payload,
+        message: "Received message #{queue_message.message_id}",
+        message_id: queue_message.message_id,
+        queue_url: queue_url,
+        body: body,
       }.to_json)
     end
   end
