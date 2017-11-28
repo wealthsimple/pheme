@@ -108,9 +108,9 @@ module Pheme
     def log_polling_start
       time_start = Time.now
       Pheme.logger.info({
-        message: "Start long-polling #{queue_url}",
-        type: self.class.name,
+        message: "#{self.class} start long-polling #{queue_url}",
         queue_url: queue_url,
+        queue_poller: self.class.to_s,
         format: format,
         max_messages: max_messages,
         connection_pool_block: connection_pool_block,
@@ -123,9 +123,10 @@ module Pheme
       time_end = Time.now
       elapsed = time_end - time_start
       Pheme.logger.info({
-        message: "Finished long-polling #{queue_url}, duration: #{elapsed.round(2)} seconds.",
+        message: "#{self.class} finished long-polling #{queue_url}, duration: #{elapsed.round(2)} seconds.",
         queue_url: queue_url,
         format: format,
+        queue_poller: self.class.to_s,
         messages_received: @messages_received,
         messages_processed: @messages_processed,
         duration: elapsed.round(2),
@@ -136,15 +137,17 @@ module Pheme
 
     def log_delete(queue_message)
       Pheme.logger.info({
-        message: "Deleted message #{queue_message.message_id}",
+        message: "#{self.class} deleted message #{queue_message.message_id}",
         message_id: queue_message.message_id,
+        queue_poller: self.class.to_s,
         queue_url: queue_url,
       }.to_json)
     end
 
     def log_message_received(queue_message, body)
       Pheme.logger.info({
-        message: "Received message #{queue_message.message_id}",
+        message: "#{self.class} received message #{queue_message.message_id}",
+        queue_poller: self.class.to_s,
         message_id: queue_message.message_id,
         queue_url: queue_url,
         body: body,
