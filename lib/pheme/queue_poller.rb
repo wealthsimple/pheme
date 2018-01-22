@@ -2,10 +2,10 @@ module Pheme
   class QueuePoller
     attr_accessor :queue_url, :queue_poller, :connection_pool_block, :format, :max_messages, :poller_configuration
 
-    def initialize(queue_url:, connection_pool_block: false, max_messages: nil, format: :json, poller_configuration: {})
+    def initialize(queue_url:, connection_pool_block: false, max_messages: nil, format: :json, poller_configuration: {}, sqs_client: nil)
       raise ArgumentError, "must specify non-nil queue_url" unless queue_url.present?
       @queue_url = queue_url
-      @queue_poller = Aws::SQS::QueuePoller.new(queue_url)
+      @queue_poller = Aws::SQS::QueuePoller.new(queue_url, client: sqs_client)
       @connection_pool_block = connection_pool_block
       @messages_processed = 0
       @messages_received = 0
