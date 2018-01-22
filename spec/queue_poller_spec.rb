@@ -19,6 +19,15 @@ describe Pheme::QueuePoller do
         expect(ExampleQueuePoller.new(queue_url: "queue_url", max_messages: 5).max_messages).to eq(5)
       end
     end
+
+    context "when initialized with sqs_client" do
+      let(:sqs_client) { Object.new }
+
+      it "should set custom sqs_client" do
+        expect(Aws::SQS::QueuePoller).to receive(:new).with("queue_url", client: sqs_client)
+        ExampleQueuePoller.new(queue_url: "queue_url", sqs_client: sqs_client)
+      end
+    end
   end
 
   let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: format) }
