@@ -172,7 +172,7 @@ describe Pheme::QueuePoller do
       end
 
       it "handles the message" do
-        expect(ExampleMessageHandler).to receive(:new).with(message: RecursiveOpenStruct.new(message), timestamp: timestamp)
+        expect(ExampleMessageHandler).to receive(:new).with(message: RecursiveOpenStruct.new(message), metadata: { timestamp: timestamp })
         subject.poll
       end
 

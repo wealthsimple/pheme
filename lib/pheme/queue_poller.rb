@@ -32,8 +32,8 @@ module Pheme
           Pheme.logger.tagged(queue_message.message_id) do
             begin
               content = parse_body(queue_message)
-              timestamp = parse_timestamp(queue_message)
-              handle(content, timestamp)
+              metadata = parse_metadata(queue_message)
+              handle(content, metadata)
               queue_poller.delete_message(queue_message)
               log_delete(queue_message)
               @messages_processed += 1
@@ -74,9 +74,9 @@ module Pheme
       parsed_content
     end
 
-    def parse_timestamp(queue_message)
+    def parse_metadata(queue_message)
       message_body = JSON.parse(queue_message.body)
-      message_body['Timestamp']
+      { timestamp: message_body['Timestamp'] }
     end
 
     def get_metadata(message_body)
@@ -97,7 +97,7 @@ module Pheme
       RecursiveOpenStruct.new({ wrapper: parsed_body }, recurse_over_arrays: true).wrapper
     end
 
-    def handle(_message, _timestamp)
+    def handle(_message, _metadata)
       raise NotImplementedError
     end
 
