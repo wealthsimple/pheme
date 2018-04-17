@@ -3,10 +3,10 @@ class ExampleQueuePoller < Pheme::QueuePoller
     super(queue_url: queue_url, **kwargs)
   end
 
-  def handle(message)
+  def handle(message, timestamp)
     case message.status
     when 'complete', 'rejected'
-      ExampleMessageHandler.new(message: message).handle
+      ExampleMessageHandler.new(message: message, timestamp: timestamp).handle
     else
       raise ArgumentError, "Unknown message status: #{message.status}"
     end
