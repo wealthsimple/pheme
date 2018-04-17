@@ -1,5 +1,6 @@
 describe Pheme::QueuePoller do
   let(:queue_url) { "https://sqs.us-east-1.amazonaws.com/whatever" }
+  let(:timestamp) { '2018-04-17T21:45:05.915Z' }
 
   describe ".new" do
     context "when initialized with valid params" do
@@ -104,7 +105,7 @@ describe Pheme::QueuePoller do
       let(:mock_connection_pool) { double }
       subject { ExampleQueuePoller.new(queue_url: queue_url, connection_pool_block: true) }
       let(:message) { { status: 'complete' } }
-      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification' } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp, } }
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
@@ -128,7 +129,7 @@ describe Pheme::QueuePoller do
     context "without connection pool block" do
       subject { ExampleQueuePoller.new(queue_url: queue_url) }
       let(:message) { { status: 'complete' } }
-      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification' } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp, } }
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
@@ -155,6 +156,7 @@ describe Pheme::QueuePoller do
           'MessageId' => SecureRandom.uuid,
           'Message' => message.to_json,
           'Type' => 'Notification',
+          'Timestamp' => timestamp,
         }
       end
       let!(:queue_message) do
@@ -170,7 +172,7 @@ describe Pheme::QueuePoller do
       end
 
       it "handles the message" do
-        expect(ExampleMessageHandler).to receive(:new).with(message: RecursiveOpenStruct.new(message))
+        expect(ExampleMessageHandler).to receive(:new).with(message: RecursiveOpenStruct.new(message), metadata: { timestamp: timestamp })
         subject.poll
       end
 
@@ -188,6 +190,7 @@ describe Pheme::QueuePoller do
           'MessageId' => SecureRandom.uuid,
           'Message' => message.to_json,
           'Type' => 'Notification',
+          'Timestamp' => timestamp,
         }
       end
       let!(:queue_message) do

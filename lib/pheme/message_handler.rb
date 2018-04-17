@@ -1,8 +1,8 @@
 module Pheme
   class MessageHandler
-    attr_reader :message
+    attr_reader :message, :timestamp
 
-    def initialize(message:)
+    def initialize(message:, metadata:)
       @message = message
     end
 
