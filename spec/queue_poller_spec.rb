@@ -90,6 +90,17 @@ describe Pheme::QueuePoller do
         expect(subject.first.first.test).to eq('test')
       end
     end
+
+    context "with compressed body" do
+      let(:format) { :json }
+      let(:message) do
+        gz = Zlib::GzipWriter.new(StringIO.new)
+        gz << { test: 'test' }.to_json
+        Base64.encode64(gz.close.string)
+      end
+
+      its([:test]) { is_expected.to eq('test') }
+    end
   end
 
   describe "#poll" do

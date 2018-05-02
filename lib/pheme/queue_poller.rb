@@ -1,5 +1,9 @@
+require_relative 'compression'
+
 module Pheme
   class QueuePoller
+    include Compression
+
     attr_accessor :queue_url, :queue_poller, :connection_pool_block, :format, :max_messages, :poller_configuration
 
     def initialize(queue_url:, connection_pool_block: false, max_messages: nil, format: :json, poller_configuration: {}, sqs_client: nil)
@@ -84,7 +88,7 @@ module Pheme
     end
 
     def get_content(body)
-      body['Message']
+      decompress(body['Message'])
     end
 
     def parse_csv(message_contents)
