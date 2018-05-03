@@ -11,8 +11,8 @@ module Pheme
     #
     # Source: https://docs.aws.amazon.com/sns/latest/dg/SNSMessageAttributes.html#SNSMessageAttributesNTV
     #
-    SNS_SIZE_LIMIT = 262144
-    EXPECTED_METADATA_SIZE = 1024
+    SNS_SIZE_LIMIT = 256.kilobytes
+    EXPECTED_METADATA_SIZE = 1.kilobyte
     MESSAGE_SIZE_LIMIT = SNS_SIZE_LIMIT - EXPECTED_METADATA_SIZE
 
     attr_accessor :topic_arn
