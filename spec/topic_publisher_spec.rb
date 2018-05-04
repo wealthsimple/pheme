@@ -44,5 +44,29 @@ describe Pheme::TopicPublisher do
         subject.publish(message)
       end
     end
+
+    context 'with message too large' do
+      let(:topic_arn) { "arn:aws:sns:anything" }
+      let(:message) { 'x' * (described_class::MESSAGE_SIZE_LIMIT + 1) }
+
+      subject { Pheme::TopicPublisher.new(topic_arn: topic_arn).publish(message) }
+
+      let(:compressed_message) do
+        gz = Zlib::GzipWriter.new(StringIO.new)
+        gz << message
+        Base64.encode64(gz.close.string)
+      end
+
+      it "publishes gzipped, base64 encoded message" do
+        expect(Pheme.configuration.sns_client).to(
+          receive(:publish)
+            .with({
+                    topic_arn: topic_arn,
+                    message: compressed_message,
+                  }))
+
+        subject
+      end
+    end
   end
 end

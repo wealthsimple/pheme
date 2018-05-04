@@ -1,5 +1,20 @@
+require_relative 'compression'
+
 module Pheme
   class TopicPublisher
+    include Compression
+
+    #
+    # Constant with message size limit.
+    # The message size also includes some metadata: 'name' and 'type'.
+    # We give ourselves a buffer for this metadata.
+    #
+    # Source: https://docs.aws.amazon.com/sns/latest/dg/SNSMessageAttributes.html#SNSMessageAttributesNTV
+    #
+    SNS_SIZE_LIMIT = 256.kilobytes
+    EXPECTED_METADATA_SIZE = 1.kilobyte
+    MESSAGE_SIZE_LIMIT = SNS_SIZE_LIMIT - EXPECTED_METADATA_SIZE
+
     attr_accessor :topic_arn
 
     def initialize(topic_arn:)
@@ -23,8 +38,11 @@ module Pheme
     end
 
     def serialize(message)
-      return message if message.is_a? String
-      message.to_json
+      message = message.to_json unless message.is_a? String
+
+      return compress(message) if message.bytesize > MESSAGE_SIZE_LIMIT
+
+      message
     end
   end
 end
