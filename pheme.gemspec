@@ -21,7 +21,8 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = ">= 2.1.0"
 
   gem.add_dependency "activesupport", ">= 4"
-  gem.add_dependency "aws-sdk", ">= 2", "< 4"
+  gem.add_dependency "aws-sdk-sns", "~> 1.1"
+  gem.add_dependency "aws-sdk-sqs", "~> 1.3"
   gem.add_dependency "recursive-open-struct", "~> 1"
   gem.add_dependency "smarter_csv", "~> 1"
 
