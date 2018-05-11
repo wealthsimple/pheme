@@ -6,6 +6,7 @@ dependencies:
     - 'rvm-exec 2.2.2 bundle install'
     - 'rvm-exec 2.3.5 bundle install'
     - 'rvm-exec 2.4.2 bundle install'
+    - 'rvm-exec 2.5.1 bundle install'
   post:
     - bundle exec bundle-audit update && bundle exec bundle-audit check
 test:
@@ -13,3 +14,4 @@ test:
     - 'rvm-exec 2.2.2 bundle exec rspec'
     - 'rvm-exec 2.3.5 bundle exec rspec'
     - 'rvm-exec 2.4.2 bundle exec rspec'
+    - 'rvm-exec 2.5.1 bundle exec rspec'
