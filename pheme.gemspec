@@ -26,6 +26,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency "recursive-open-struct", "~> 1"
   gem.add_dependency "smarter_csv", "~> 1"
 
+  gem.add_development_dependency 'bundler'
+  gem.add_development_dependency 'rake'
+
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "rspec-collection_matchers"
   gem.add_development_dependency "rspec-its"
