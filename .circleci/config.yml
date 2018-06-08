@@ -62,8 +62,7 @@ jobs:
       - checkout
       - *which_bundler
       - restore_cache:
-          keys:
-            - rails-demo-bundle-v2-{{ checksum "pheme-2.3.5.gemspec" }}-{{ checksum "Gemfile" }}
+          key: rails-demo-bundle-v2-{{ checksum "pheme-2.3.5.gemspec" }}-{{ checksum "Gemfile" }}
       - *bundle_install
       - save_cache:
           key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
@@ -83,8 +82,7 @@ jobs:
       - checkout
       - *which_bundler
       - restore_cache:
-        keys:
-          - rails-demo-bundle-v2-{{ checksum "pheme-2.4.2.gemspec" }}-{{ checksum "Gemfile" }}
+          key: rails-demo-bundle-v2-{{ checksum "pheme-2.4.2.gemspec" }}-{{ checksum "Gemfile" }}
       - *bundle_install
       - save_cache:
           key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
@@ -104,8 +102,7 @@ jobs:
       - checkout
       - *which_bundler
       - restore_cache:
-        keys:
-          - rails-demo-bundle-v2-{{ checksum "pheme-2.5.1.gemspec" }}-{{ checksum "Gemfile" }}
+        key: rails-demo-bundle-v2-{{ checksum "pheme-2.5.1.gemspec" }}-{{ checksum "Gemfile" }}
       - *bundle_install
       - save_cache:
           key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
