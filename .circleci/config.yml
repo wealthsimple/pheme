@@ -26,9 +26,6 @@ references:
       name: Bundle audit
       command: bundle exec bundle-audit update && bundle exec bundle-audit check
 
-  store_test_results: &store_test_results
-    path: test_results_{version}
-
 version: 2
 jobs:
   ##  build_2_2_2:
@@ -70,7 +67,8 @@ jobs:
             - vendor/bundle
       - *run_rspec
       - *bundle_audit
-      - *store_test_results
+      - store_test_results:
+          path: test_results_2_3_5
 
   build_2_4_2:
     working_directory: ~/repo
@@ -90,7 +88,8 @@ jobs:
             - vendor/bundle
       - *run_rspec
       - *bundle_audit
-      - *store_test_results
+      - store_test_results:
+          path: test_results_2_4_2
 
   build_2_5_1:
     working_directory: ~/repo
@@ -110,7 +109,8 @@ jobs:
             - vendor/bundle
       - *run_rspec
       - *bundle_audit
-      - *store_test_results
+      - store_test_results:
+          path: test_results_2_5_1
 
 workflows:
   version: 2
