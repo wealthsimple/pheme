@@ -52,7 +52,7 @@ jobs:
   ##      - *bundle_audit
   ##      - *store_test_results
 
-  build_2_3_5:
+  build_2_3_5: &build_2_3_5
     working_directory: ~/repo
     docker:
       - image: wealthsimple/ruby:2.3.5-node-docker
@@ -73,7 +73,7 @@ jobs:
       - *bundle_audit
       - *store_test_results
 
-  build_2_4_2:
+  build_2_4_2: &build_2_4_2
     working_directory: ~/repo
     docker:
       - image: wealthsimple/ruby:2.4.2-node-docker
@@ -94,7 +94,7 @@ jobs:
       - *bundle_audit
       - *store_test_results
 
-  build_2_5_1:
+  build_2_5_1: &build_2_5_1
     working_directory: ~/repo
     docker:
       - image: wealthsimple/ruby:2.5.1-node-docker
@@ -114,3 +114,11 @@ jobs:
       - *run_rspec
       - *bundle_audit
       - *store_test_results
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - *build_2_3_5
+      - *build_2_4_2
+      - *build_2_5_1
