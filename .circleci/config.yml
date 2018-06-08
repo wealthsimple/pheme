@@ -1,0 +1,116 @@
+# Customized from circle sample rails config here: https://circleci.com/docs/2.0/language-ruby/
+references:
+  which_bundler: &which_bundler
+  run:
+    name: Which bundler?
+    command: bundle -v
+
+  bundle_install: &bundle_install
+  run:
+    name: Bundle Install
+    command: bundle check || bundle install
+
+  run_rspec: &run_rspec
+  run:
+    name: Run rspec
+    command: |
+      bundle exec rspec --profile 10 \
+                              --require spec_helper \
+                              --format RspecJunitFormatter \
+                              --out test_results/rspec.xml \
+                              --format documentation \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+  
+  bundle_audit: &bundle_audit
+  run:
+    name: Bundle audit
+    command: bundle exec bundle-audit update && bundle exec bundle-audit check
+
+  store_test_results: &store_test_results
+  path: test_results_{version}
+
+version: 2
+jobs:
+  ##  build_2_2_2:
+  ##    working_directory: ~/repo
+  ##    docker:
+  ##      - image: wealthsimple/ruby:2.2.2-node-docker
+  ##        environment:
+  ##          RAILS_ENV: test
+  ##    steps:
+  ##      - checkout
+  ##      - *which_bundler
+  ##      - restore_cache:
+  ##          keys:
+  ##            - rails-demo-bundle-v2-{{ checksum "pheme-2.2.2.gemspec" }}-{{ checksum "Gemfile" }}
+  ##      - *bundle_install
+  ##      - save_cache:
+  ##          key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
+  ##          paths:
+  ##            - vendor/bundle
+  ##      - *run_rspec
+  ##      - *bundle_audit
+  ##      - *store_test_results
+
+  build_2_3_5:
+    working_directory: ~/repo
+    docker:
+      - image: wealthsimple/ruby:2.3.5-node-docker
+        environment:
+          RAILS_ENV: test
+    steps:
+      - checkout
+      - *which_bundler
+      - restore_cache:
+          keys:
+            - rails-demo-bundle-v2-{{ checksum "pheme-2.3.5.gemspec" }}-{{ checksum "Gemfile" }}
+      - *bundle_install
+      - save_cache:
+          key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
+          paths:
+            - vendor/bundle
+      - *run_rspec
+      - *bundle_audit
+      - *store_test_results
+
+  build_2_4_2:
+    working_directory: ~/repo
+    docker:
+      - image: wealthsimple/ruby:2.4.2-node-docker
+        environment:
+          RAILS_ENV: test
+    steps:
+      - checkout
+      - *which_bundler
+      - restore_cache:
+        keys:
+          - rails-demo-bundle-v2-{{ checksum "pheme-2.4.2.gemspec" }}-{{ checksum "Gemfile" }}
+      - *bundle_install
+      - save_cache:
+          key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
+          paths:
+            - vendor/bundle
+      - *run_rspec
+      - *bundle_audit
+      - *store_test_results
+
+  build_2_5_1:
+    working_directory: ~/repo
+    docker:
+      - image: wealthsimple/ruby:2.5.1-node-docker
+        environment:
+          RAILS_ENV: test
+    steps:
+      - checkout
+      - *which_bundler
+      - restore_cache:
+        keys:
+          - rails-demo-bundle-v2-{{ checksum "pheme-2.5.1.gemspec" }}-{{ checksum "Gemfile" }}
+      - *bundle_install
+      - save_cache:
+          key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
+          paths:
+            - vendor/bundle
+      - *run_rspec
+      - *bundle_audit
+      - *store_test_results

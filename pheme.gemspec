@@ -32,6 +32,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "rspec-collection_matchers"
   gem.add_development_dependency "rspec-its"
-  gem.add_development_dependency "rspec_junit_formatter"
+  gem.add_development_dependency "rspec_junit_formatter", ">= 0", "~> 0.2"
   gem.add_development_dependency "rubocop"
 end
