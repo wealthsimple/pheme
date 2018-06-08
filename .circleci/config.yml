@@ -28,27 +28,6 @@ references:
 
 version: 2
 jobs:
-  ##  build_2_2_2:
-  ##    working_directory: ~/repo
-  ##    docker:
-  ##      - image: wealthsimple/ruby:2.2.2-node-docker
-  ##        environment:
-  ##          RAILS_ENV: test
-  ##    steps:
-  ##      - checkout
-  ##      - *which_bundler
-  ##      - restore_cache:
-  ##          keys:
-  ##            - rails-demo-bundle-v2-{{ checksum "pheme-2.2.2.gemspec" }}-{{ checksum "Gemfile" }}
-  ##      - *bundle_install
-  ##      - save_cache:
-  ##          key: rails-demo-bundle-v2-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
-  ##          paths:
-  ##            - vendor/bundle
-  ##      - *run_rspec
-  ##      - *bundle_audit
-  ##      - *store_test_results
-
   build_2_3_5:
     working_directory: ~/repo
     docker:
