@@ -27,7 +27,7 @@ references:
     command: bundle exec bundle-audit update && bundle exec bundle-audit check
 
   store_test_results: &store_test_results
-  path: test_results_{version}
+    path: test_results_{version}
 
 version: 2
 jobs:
