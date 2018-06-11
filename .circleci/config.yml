@@ -47,7 +47,7 @@ jobs:
       - *run_rspec
       - *bundle_audit
       - store_test_results:
-          path: test_results_2_3_5
+          path: test_results
 
   build_2_4_2:
     working_directory: ~/repo
@@ -68,7 +68,7 @@ jobs:
       - *run_rspec
       - *bundle_audit
       - store_test_results:
-          path: test_results_2_4_2
+          path: test_results
 
   build_2_5_1:
     working_directory: ~/repo
@@ -89,7 +89,7 @@ jobs:
       - *run_rspec
       - *bundle_audit
       - store_test_results:
-          path: test_results_2_5_1
+          path: test_results
 
 workflows:
   version: 2
