@@ -13,6 +13,12 @@ describe Pheme::TopicPublisher do
         expect { ExamplePublisher.new(topic_arn: nil) }.to raise_error(ArgumentError)
       end
     end
+
+    context "when topic_arn set via class setter" do
+      it "does not raise an error" do
+        expect { ExampleWithArnPublisher.new }.not_to raise_error
+      end
+    end
   end
 
   describe "#publish_events" do
