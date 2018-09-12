@@ -15,12 +15,19 @@ module Pheme
     EXPECTED_METADATA_SIZE = 1.kilobyte
     MESSAGE_SIZE_LIMIT = SNS_SIZE_LIMIT - EXPECTED_METADATA_SIZE
 
-    attr_accessor :topic_arn
+    class << self
+      attr_reader :_topic_arn
 
-    def initialize(topic_arn:)
+      def topic_arn(topic_arn)
+        @_topic_arn = topic_arn
+      end
+    end
+
+    def initialize(topic_arn: self.class._topic_arn)
       raise ArgumentError, "must specify non-nil topic_arn" unless topic_arn.present?
       @topic_arn = topic_arn
     end
+    attr_accessor :topic_arn
 
     def publish_events
       raise NotImplementedError
