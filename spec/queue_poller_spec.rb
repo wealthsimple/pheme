@@ -55,14 +55,14 @@ describe Pheme::QueuePoller do
       let(:expected_message) do
         [
           { test1: 'value1', test2: 'value2' },
-          { test1: 'value3', test2: 'value4' },
+          { test1: 'value3', test2: 'value4' }
         ]
       end
       let(:message) do
         [
           %w[test1 test2].join(','),
           %w[value1 value2].join(','),
-          %w[value3 value4].join(','),
+          %w[value3 value4].join(',')
         ].join("\n")
       end
 
@@ -116,7 +116,7 @@ describe Pheme::QueuePoller do
       let(:mock_connection_pool) { double }
       subject { ExampleQueuePoller.new(queue_url: queue_url, connection_pool_block: true) }
       let(:message) { { status: 'complete' } }
-      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp, } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
@@ -140,7 +140,7 @@ describe Pheme::QueuePoller do
     context "without connection pool block" do
       subject { ExampleQueuePoller.new(queue_url: queue_url) }
       let(:message) { { status: 'complete' } }
-      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp, } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,

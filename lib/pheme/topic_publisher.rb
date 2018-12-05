@@ -25,6 +25,7 @@ module Pheme
 
     def initialize(topic_arn: self.class._topic_arn)
       raise ArgumentError, "must specify non-nil topic_arn" unless topic_arn.present?
+
       @topic_arn = topic_arn
     end
     attr_accessor :topic_arn

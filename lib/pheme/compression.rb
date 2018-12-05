@@ -11,6 +11,7 @@ module Pheme
 
     def decompress(body)
       return Zlib::GzipReader.new(StringIO.new(Base64.decode64(body))).read if gzip?(body)
+
       body
     end
 

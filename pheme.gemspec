@@ -1,5 +1,4 @@
-
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require "pheme/version"
@@ -18,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
   gem.licenses      = ["MIT"]
-  gem.required_ruby_version = ">= 2.1.0"
+  gem.required_ruby_version = ">= 2.3.0"
 
   gem.add_dependency "activesupport", ">= 4"
   gem.add_dependency "aws-sdk-sns", "~> 1.1"

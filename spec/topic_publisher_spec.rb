@@ -65,11 +65,12 @@ describe Pheme::TopicPublisher do
 
       it "publishes gzipped, base64 encoded message" do
         expect(Pheme.configuration.sns_client).to(
-          receive(:publish)
-            .with({
-                    topic_arn: topic_arn,
-                    message: compressed_message,
-                  }))
+          receive(:publish).
+            with({
+              topic_arn: topic_arn,
+              message: compressed_message,
+            }),
+        )
 
         subject
       end

@@ -11,7 +11,7 @@ AllCops:
     - 'db/**/*'
     - 'lib/tasks/circle_0.rake' # Ignore circleci code:
     - 'node_modules/**/*'
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.3
 
 Lint/AmbiguousOperator:
   Enabled: false
@@ -74,7 +74,7 @@ Style/Documentation:
 Layout/TrailingBlankLines:
   EnforcedStyle: final_newline
 
-Style/VariableName:
+Naming/VariableName:
   EnforcedStyle: snake_case
 
 Style/MethodDefParentheses:
@@ -83,7 +83,7 @@ Style/MethodDefParentheses:
 Style/Semicolon:
   AllowAsExpressionSeparator: false
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
 
 Style/Alias:
