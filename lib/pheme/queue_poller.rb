@@ -146,7 +146,7 @@ module Pheme
     end
 
     def log_delete(queue_message)
-      Pheme.logger.info({
+      Pheme.logger.debug({
         message: "#{self.class} deleted message #{queue_message.message_id}",
         message_id: queue_message.message_id,
         queue_poller: self.class.to_s,
@@ -155,7 +155,7 @@ module Pheme
     end
 
     def log_message_received(queue_message, body)
-      Pheme.logger.info({
+      Pheme.logger.debug({
         message: "#{self.class} received message #{queue_message.message_id}",
         queue_poller: self.class.to_s,
         message_id: queue_message.message_id,
