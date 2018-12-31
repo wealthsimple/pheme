@@ -17,7 +17,7 @@ module Pheme
 
   class Configuration
     ATTRIBUTES = %i[sns_client sqs_client logger rollbar].freeze
-    attr_accessor *ATTRIBUTES
+    attr_accessor(*ATTRIBUTES)
 
     def initialize
       @logger ||= Logger.new(STDOUT)
