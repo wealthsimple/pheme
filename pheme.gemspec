@@ -4,6 +4,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "pheme/version"
 
 Gem::Specification.new do |s|
+  raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.' unless s.respond_to?(:metadata)
+
   s.name          = "pheme"
   s.version       = Pheme::VERSION
   s.authors       = ["Peter Graham"]
@@ -17,6 +19,7 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
   s.licenses      = ["MIT"]
+  s.metadata['allowed_push_host'] = "https://nexus.iad.w10external.com/repository/gems-private"
 
   s.add_dependency "activesupport", ">= 4"
   s.add_dependency "aws-sdk-sns", "~> 1.1"
@@ -25,12 +28,13 @@ Gem::Specification.new do |s|
   s.add_dependency "smarter_csv", "~> 1"
 
   s.add_development_dependency 'bundler'
+  s.add_development_dependency 'git'
   s.add_development_dependency 'rake'
-
-  s.add_development_dependency "rspec"
-  s.add_development_dependency "rspec-collection_matchers"
-  s.add_development_dependency "rspec-its"
-  s.add_development_dependency "rspec_junit_formatter", ">= 0", "~> 0.2"
-  s.add_development_dependency "rubocop"
-  s.add_development_dependency "ws-style"
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rspec-collection_matchers'
+  s.add_development_dependency 'rspec-its'
+  s.add_development_dependency 'rspec_junit_formatter', '~> 0.2'
+  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'ws-gem_publisher'
+  s.add_development_dependency 'ws-style'
 end

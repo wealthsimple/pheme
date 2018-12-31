@@ -1,5 +1,21 @@
-# Customized from circle sample rails config here: https://circleci.com/docs/2.0/language-ruby/
+version: 2
+
 references:
+  defaults:
+    2_4_5: &defaults_2_4_5
+      working_directory: ~/wealthsimple
+      docker:
+        - image: circleci/ruby:2.4.5
+          environment:
+            RAILS_ENV: test
+
+    2_5_3: &defaults
+      working_directory: ~/wealthsimple
+      docker:
+        - image: circleci/ruby:2.5.3
+          environment:
+            RAILS_ENV: test
+
   which_bundler: &which_bundler
     run:
       name: Which bundler?
@@ -8,7 +24,16 @@ references:
   bundle_install: &bundle_install
     run:
       name: Bundle Install
-      command: bundle check || bundle install
+      command: bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+  attach_code_workspace: &attach_code_workspace
+    attach_workspace:
+      at: ~/wealthsimple
+
+  restore_bundle_dependencies: &restore_bundle_dependencies
+    run:
+      name: Restore bundle dependencies from workspace
+      command: bundle --path vendor/bundle
 
   run_rspec: &run_rspec
     run:
@@ -21,80 +46,97 @@ references:
                           --format documentation \
                           $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
 
-  bundle_audit: &bundle_audit
-    run:
-      name: Bundle audit
-      command: bundle exec bundle-audit update && bundle exec bundle-audit check
-
-version: 2
 jobs:
-  build_2_3_8:
-    working_directory: ~/repo
-    docker:
-      - image: wealthsimple/ruby:2.3.8-node-docker
-        environment:
-          RAILS_ENV: test
+  checkout_and_bundle_2_4_5:
+    <<: *defaults_2_4_5
     steps:
       - checkout
       - *which_bundler
-      - restore_cache:
-          key: v1-ruby-2_3-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
       - *bundle_install
-      - save_cache:
-          key: v1-ruby-2_3-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
-          paths:
-            - vendor/bundle
       - *run_rspec
-      - *bundle_audit
       - store_test_results:
           path: test_results
 
-  build_2_4_5:
-    working_directory: ~/repo
-    docker:
-      - image: wealthsimple/ruby:2.4.5-node-docker
-        environment:
-          RAILS_ENV: test
+  checkout_and_bundle:
+    <<: *defaults
     steps:
       - checkout
       - *which_bundler
-      - restore_cache:
-          key: v1-ruby-2_4-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
       - *bundle_install
-      - save_cache:
-          key: v1-ruby-2_4-{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
-          paths:
-            - vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+  rspec:
+    <<: *defaults
+    steps:
+      - *attach_code_workspace
+      - *restore_bundle_dependencies
       - *run_rspec
-      - *bundle_audit
       - store_test_results:
           path: test_results
 
-  build_2_5_3:
-    working_directory: ~/repo
-    docker:
-      - image: wealthsimple/ruby:2.5.3-node-docker
-        environment:
-          RAILS_ENV: test
+  lint_check:
+    <<: *defaults
     steps:
-      - checkout
-      - *which_bundler
-      - restore_cache:
-          key: v1-ruby-2_5--{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
-      - *bundle_install
-      - save_cache:
-          key: v1-ruby-2_5--{{ checksum "pheme.gemspec" }}-{{ checksum "Gemfile" }}
-          paths:
-            - vendor/bundle
-      - *run_rspec
-      - *bundle_audit
-      - store_test_results:
-          path: test_results
+      - *attach_code_workspace
+      - *restore_bundle_dependencies
+      - run: bundle exec rubocop
+
+  vulnerability_check:
+    <<: *defaults
+    steps:
+      - *attach_code_workspace
+      - *restore_bundle_dependencies
+      - run: bundle exec bundle-audit update && bundle exec bundle-audit check
+
+  release:
+    <<: *defaults
+    steps:
+      - *attach_code_workspace
+      - *restore_bundle_dependencies
+      - run:
+          command: bundle exec rake release
 
 workflows:
   version: 2
   build:
     jobs:
-      - build_2_3_8
-      - build_2_4_5
-      - build_2_5_3
+      - checkout_and_bundle_2_4_5:
+          context: wealthsimple
+      - checkout_and_bundle:
+          context: wealthsimple
+      - rspec:
+          requires:
+            - checkout_and_bundle
+      - lint_check:
+          requires:
+            - checkout_and_bundle
+      - vulnerability_check:
+          requires:
+            - checkout_and_bundle
+      - release:
+          context: wealthsimple
+          filters:
+            branches:
+              only: master
+          requires:
+          - checkout_and_bundle_2_4_5
+          - rspec
+          - lint_check
+          - vulnerability_check
+
+  security-audit:
+    triggers:
+      - schedule:
+          # 11:05 am UTC: 6:05 am EST / 7:05 am EDT
+          cron: "5 11 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - checkout_and_bundle:
+          context: wealthsimple
+      - vulnerability_check:
+          requires:
+            - checkout_and_bundle
