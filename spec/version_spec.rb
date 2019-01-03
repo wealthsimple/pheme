@@ -10,7 +10,11 @@ describe Ws::Pheme do
 
     skip if git.current_branch == 'master'
 
-    master_version_file = git.show('origin/master', 'lib/ws/pheme/version.rb')
+    begin
+      master_version_file = git.show('origin/master', 'lib/ws/pheme/version.rb')
+    rescue Git::GitExecuteError
+      skip('No version file found in master branch.')
+    end
     master_version = master_version_file.match(/VERSION = ['"](.*)['"]/)[1]
 
     expect(Gem::Version.new(Ws::Pheme::VERSION)).to be > Gem::Version.new(master_version)
