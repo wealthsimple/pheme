@@ -5,7 +5,7 @@
 # This poller's output message will be a list of hashes,
 # each containing one event.
 #
-module Pheme
+module Ws::Pheme
   module MessageType
     module AwsEvent
       extend ActiveSupport::Concern

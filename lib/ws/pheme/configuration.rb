@@ -1,4 +1,4 @@
-module Pheme
+module Ws::Pheme
   class << self
     attr_writer :configuration
   end

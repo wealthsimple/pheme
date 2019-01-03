@@ -1,4 +1,4 @@
-describe Pheme::QueuePoller do
+describe Ws::Pheme::QueuePoller do
   let(:queue_url) { "https://sqs.us-east-1.amazonaws.com/whatever" }
   let(:timestamp) { '2018-04-17T21:45:05.915Z' }
 
@@ -214,12 +214,12 @@ describe Pheme::QueuePoller do
       before(:each) do
         allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
         allow(subject.queue_poller).to receive(:delete).with(queue_message)
-        allow(Pheme.logger).to receive(:error)
+        allow(Ws::Pheme.logger).to receive(:error)
       end
 
       it "logs the error" do
         subject.poll
-        expect(Pheme.logger).to have_received(:error) do |error|
+        expect(Ws::Pheme.logger).to have_received(:error) do |error|
           expect(error).to be_a(ArgumentError)
           expect(error.message).to eq('Unknown message status: unknown-abc')
         end

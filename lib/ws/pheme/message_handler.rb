@@ -1,4 +1,4 @@
-module Pheme
+module Ws::Pheme
   class MessageHandler
     attr_reader :message, :metadata, :timestamp
 
