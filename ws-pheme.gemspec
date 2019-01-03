@@ -1,24 +1,24 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require "pheme/version"
+require "ws/pheme/version"
 
 Gem::Specification.new do |s|
   raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.' unless s.respond_to?(:metadata)
 
-  s.name          = "pheme"
-  s.version       = Pheme::VERSION
+  s.name          = "ws-pheme"
+  s.version       = Ws::Pheme::VERSION
   s.authors       = ["Peter Graham"]
   s.email         = ["peter@wealthsimple.com"]
   s.description   = 'Ruby AWS SNS publisher + SQS poller & message handler'
   s.summary       = 'Ruby SNS publisher + SQS poller & message handler'
-  s.homepage      = "https://github.com/wealthsimple/pheme"
+  s.homepage      = "https://github.com/wealthsimple/ws-pheme"
 
   s.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
   s.executables   = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
-  s.licenses      = ["MIT"]
+  s.license       = "Unlicensed"
   s.metadata['allowed_push_host'] = "https://nexus.iad.w10external.com/repository/gems-private"
 
   s.add_dependency "activesupport", ">= 4"

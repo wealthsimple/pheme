@@ -1,10 +1,10 @@
-class ExampleMessageHandler < Pheme::MessageHandler
+class ExampleMessageHandler < Ws::Pheme::MessageHandler
   def handle
     case message.status
     when "complete"
-      Pheme.logger.info("Done")
+      Ws::Pheme.logger.info("Done")
     when "rejected"
-      Pheme.logger.error("Oops")
+      Ws::Pheme.logger.error("Oops")
     end
   end
 end

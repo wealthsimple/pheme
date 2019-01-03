@@ -8,5 +8,5 @@ require_relative 'example_queue_poller'
 # each containing one event.
 #
 class ExampleAwsEventQueuePoller < ExampleQueuePoller
-  include Pheme::MessageType::AwsEvent
+  include Ws::Pheme::MessageType::AwsEvent
 end

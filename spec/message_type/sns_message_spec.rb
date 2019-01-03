@@ -1,7 +1,7 @@
-describe Pheme::MessageType::SnsMessage do
+describe Ws::Pheme::MessageType::SnsMessage do
   module SnsMessage
     class Fixture < ExampleQueuePoller
-      include Pheme::MessageType::SnsMessage
+      include Ws::Pheme::MessageType::SnsMessage
     end
   end
 

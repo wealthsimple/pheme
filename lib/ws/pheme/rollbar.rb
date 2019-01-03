@@ -1,4 +1,4 @@
-module Pheme
+module Ws::Pheme
   def self.rollbar(exception, message, data = {})
     return  if configuration.rollbar.nil?
 
