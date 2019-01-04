@@ -1,5 +1,5 @@
 module Ws
-  module Ws::Pheme
-    VERSION = "2.0.0".freeze
+  module Pheme
+    VERSION = '2.0.1'.freeze
   end
 end
