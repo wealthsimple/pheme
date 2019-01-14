@@ -6,7 +6,7 @@ end
 
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
-require 'ws/gem_publisher'
+require 'ws/gem_publisher/tasks'
 
 RSpec::Core::RakeTask.new(:spec)
 
