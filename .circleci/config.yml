@@ -96,7 +96,12 @@ jobs:
       - *attach_code_workspace
       - *restore_bundle_dependencies
       - run:
-          command: bundle exec rake release
+          name: Release to rubygems.org
+          command: |
+            mkdir ~/.gem
+            echo ":rubygems_api_key: ${RUBYGEMS_API_KEY}" >> ~/.gem/credentials
+            chmod 600 ~/.gem/credentials
+            bundle exec rake release
 
 workflows:
   version: 2
