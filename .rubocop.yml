@@ -10,8 +10,3 @@ AllCops:
     - 'examples/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
-
-# Introduced when renaming module from Pagination to Ws::Pagination to
-# minimize diff and confusion.
-Style/ClassAndModuleChildren:
-  Enabled: false

@@ -1,4 +1,4 @@
-describe Ws::Pheme::MessageType::AwsEvent do
+describe Pheme::MessageType::AwsEvent do
   let(:poller) { ExampleAwsEventQueuePoller.new }
   let(:message_id) { SecureRandom.uuid }
   let(:queue_url) { 'http://queue_url' }

@@ -1,4 +1,4 @@
-module Ws::Pheme
+module Pheme
   class << self
     attr_writer :configuration
   end
@@ -20,7 +20,7 @@ module Ws::Pheme
     attr_accessor(*ATTRIBUTES)
 
     def initialize
-      @logger ||= Logger.new(STDOUT)
+      @logger ||= Logger.new(STDOUT) # rubocop:disable Lint/DisjunctiveAssignmentInConstructor
       @logger = ActiveSupport::TaggedLogging.new(@logger) unless @logger.respond_to?(:tagged)
     end
 

@@ -1,4 +1,4 @@
-describe Ws::Pheme do
+describe Pheme do
   describe ".configure" do
     let(:sns_client) { double }
     let(:sqs_client) { double }

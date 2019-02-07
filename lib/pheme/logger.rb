@@ -1,4 +1,4 @@
-module Ws::Pheme
+module Pheme
   def self.log(method, text)
     @logger ||= ActiveSupport::TaggedLogging.new(configuration.logger)
     @tag ||= "pheme_#{SecureRandom.uuid}"

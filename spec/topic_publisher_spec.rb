@@ -1,4 +1,4 @@
-describe Ws::Pheme::TopicPublisher do
+describe Pheme::TopicPublisher do
   before(:each) { use_default_configuration! }
 
   describe ".new" do
@@ -25,11 +25,11 @@ describe Ws::Pheme::TopicPublisher do
     subject { ExamplePublisher.new(topic_arn: "arn:aws:sns:whatever") }
 
     it "publishes the correct events" do
-      expect(Ws::Pheme.configuration.sns_client).to receive(:publish).with({
+      expect(Pheme.configuration.sns_client).to receive(:publish).with({
         topic_arn: "arn:aws:sns:whatever",
         message: { id: "id-0", status: "complete" }.to_json,
       })
-      expect(Ws::Pheme.configuration.sns_client).to receive(:publish).with({
+      expect(Pheme.configuration.sns_client).to receive(:publish).with({
         topic_arn: "arn:aws:sns:whatever",
         message: { id: "id-1", status: "complete" }.to_json,
       })
@@ -40,10 +40,10 @@ describe Ws::Pheme::TopicPublisher do
       let(:topic_arn) { "arn:aws:sns:anything" }
       let(:message) { "don't touch my string" }
 
-      subject { Ws::Pheme::TopicPublisher.new(topic_arn: topic_arn) }
+      subject { Pheme::TopicPublisher.new(topic_arn: topic_arn) }
 
       it "publishes unchanged message" do
-        expect(Ws::Pheme.configuration.sns_client).to receive(:publish).with({
+        expect(Pheme.configuration.sns_client).to receive(:publish).with({
           topic_arn: topic_arn,
           message: message,
         })
@@ -55,7 +55,7 @@ describe Ws::Pheme::TopicPublisher do
       let(:topic_arn) { "arn:aws:sns:anything" }
       let(:message) { 'x' * (described_class::MESSAGE_SIZE_LIMIT + 1) }
 
-      subject { Ws::Pheme::TopicPublisher.new(topic_arn: topic_arn).publish(message) }
+      subject { Pheme::TopicPublisher.new(topic_arn: topic_arn).publish(message) }
 
       let(:compressed_message) do
         gz = Zlib::GzipWriter.new(StringIO.new)
@@ -64,7 +64,7 @@ describe Ws::Pheme::TopicPublisher do
       end
 
       it "publishes gzipped, base64 encoded message" do
-        expect(Ws::Pheme.configuration.sns_client).to(
+        expect(Pheme.configuration.sns_client).to(
           receive(:publish).
             with({
               topic_arn: topic_arn,

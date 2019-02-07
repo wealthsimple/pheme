@@ -1,6 +1,6 @@
 require_relative 'compression'
 
-module Ws::Pheme
+module Pheme
   class QueuePoller
     include Compression
 
@@ -34,7 +34,7 @@ module Ws::Pheme
       with_optional_connection_pool_block do
         queue_poller.poll(poller_configuration) do |queue_message|
           @messages_received += 1
-          Ws::Pheme.logger.tagged(queue_message.message_id) do
+          Pheme.logger.tagged(queue_message.message_id) do
             begin
               content = parse_body(queue_message)
               metadata = parse_metadata(queue_message)
@@ -45,8 +45,8 @@ module Ws::Pheme
             rescue SignalException
               throw :stop_polling
             rescue StandardError => e
-              Ws::Pheme.logger.error(e)
-              Ws::Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
+              Pheme.logger.error(e)
+              Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
             end
           end
         end
@@ -119,7 +119,7 @@ module Ws::Pheme
 
     def log_polling_start
       time_start = Time.now
-      Ws::Pheme.logger.info({
+      Pheme.logger.info({
         message: "#{self.class} start long-polling #{queue_url}",
         queue_url: queue_url,
         queue_poller: self.class.to_s,
@@ -134,7 +134,7 @@ module Ws::Pheme
     def log_polling_end(time_start)
       time_end = Time.now
       elapsed = time_end - time_start
-      Ws::Pheme.logger.info({
+      Pheme.logger.info({
         message: "#{self.class} finished long-polling #{queue_url}, duration: #{elapsed.round(2)} seconds.",
         queue_url: queue_url,
         format: format,
@@ -148,7 +148,7 @@ module Ws::Pheme
     end
 
     def log_delete(queue_message)
-      Ws::Pheme.logger.debug({
+      Pheme.logger.debug({
         message: "#{self.class} deleted message #{queue_message.message_id}",
         message_id: queue_message.message_id,
         queue_poller: self.class.to_s,
@@ -157,7 +157,7 @@ module Ws::Pheme
     end
 
     def log_message_received(queue_message, body)
-      Ws::Pheme.logger.debug({
+      Pheme.logger.debug({
         message: "#{self.class} received message #{queue_message.message_id}",
         queue_poller: self.class.to_s,
         message_id: queue_message.message_id,
