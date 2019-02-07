@@ -122,9 +122,9 @@ workflows:
             - checkout_and_bundle
       - release:
           context: wealthsimple
-          # filters:
-          #   branches:
-          #     only: master
+          filters:
+            branches:
+              only: master
           requires:
           - checkout_and_bundle_2_4_5
           - rspec
