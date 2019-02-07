@@ -1,4 +1,4 @@
-class ExampleQueuePoller < Ws::Pheme::QueuePoller
+class ExampleQueuePoller < Pheme::QueuePoller
   def initialize(queue_url: 'http://mock_url.test', **kwargs)
     super(queue_url: queue_url, **kwargs)
   end

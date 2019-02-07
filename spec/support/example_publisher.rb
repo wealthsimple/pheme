@@ -1,4 +1,4 @@
-class ExamplePublisher < Ws::Pheme::TopicPublisher
+class ExamplePublisher < Pheme::TopicPublisher
   def publish_events
     2.times do |n|
       publish({

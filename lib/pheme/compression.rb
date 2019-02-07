@@ -1,7 +1,7 @@
 require 'base64'
 require 'zlib'
 
-module Ws::Pheme
+module Pheme
   module Compression
     def compress(body)
       gz = Zlib::GzipWriter.new(StringIO.new)

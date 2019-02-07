@@ -1,4 +1,4 @@
-# ws-pheme [![CircleCI](https://circleci.com/gh/wealthsimple/ws-pheme.svg?style=svg&circle-token=76942be0b1712ac066627be264886ee18039ad11)](https://circleci.com/gh/wealthsimple/ws-pheme)
+# pheme [![CircleCI](https://circleci.com/gh/wealthsimple/pheme.svg?style=svg&circle-token=76942be0b1712ac066627be264886ee18039ad11)](https://circleci.com/gh/wealthsimple/pheme)
 
 Ruby SNS publisher + SQS poller & message handler
 
@@ -7,9 +7,7 @@ Ruby SNS publisher + SQS poller & message handler
 Add this line to your application's `Gemfile`:
 
 ```ruby
-source 'https://nexus.iad.w10external.com/repository/gems' do
-  gem 'ws-pheme'
-end
+gem 'pheme'
 ```
 
 And then execute:
@@ -29,7 +27,7 @@ Aws.config.update(aws_config)
 AWS_SNS_CLIENT = Aws::SNS::Client.new(aws_config)
 AWS_SQS_CLIENT = Aws::SQS::Client.new(aws_config)
 
-Ws::Pheme.configure do |config|
+Pheme.configure do |config|
   config.sqs_client = AWS_SQS_CLIENT
   config.sns_client = AWS_SNS_CLIENT
   config.logger = Logger.new(STDOUT) # Optionally replace with your app logger, e.g. `Rails.logger`

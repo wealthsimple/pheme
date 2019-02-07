@@ -4,7 +4,7 @@
 # the default behaviour has been overwritten and you
 # wish to restore it.
 #
-module Ws::Pheme
+module Pheme
   module MessageType
     module SnsMessage
       extend ActiveSupport::Concern

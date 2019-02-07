@@ -1,6 +1,6 @@
 require_relative 'compression'
 
-module Ws::Pheme
+module Pheme
   class TopicPublisher
     include Compression
 
@@ -41,8 +41,8 @@ module Ws::Pheme
         publisher: self.class.to_s,
         topic_arn: topic_arn,
       }
-      Ws::Pheme.logger.info(payload.to_json)
-      Ws::Pheme.configuration.sns_client.publish(topic_arn: topic_arn, message: serialize(message))
+      Pheme.logger.info(payload.to_json)
+      Pheme.configuration.sns_client.publish(topic_arn: topic_arn, message: serialize(message))
     end
 
     def serialize(message)
