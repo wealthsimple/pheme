@@ -93,6 +93,7 @@ jobs:
   release:
     <<: *defaults
     steps:
+      - checkout
       - *attach_code_workspace
       - *restore_bundle_dependencies
       - run:
