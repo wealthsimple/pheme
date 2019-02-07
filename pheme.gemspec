@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.license       = "MIT"
 
+  s.required_ruby_version = '>= 2.4'
+
   s.add_dependency "activesupport", ">= 4"
   s.add_dependency "aws-sdk-sns", "~> 1.1"
   s.add_dependency "aws-sdk-sqs", "~> 1.3"
