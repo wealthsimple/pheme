@@ -42,7 +42,11 @@ module Ws::Pheme
         topic_arn: topic_arn,
       }
       Ws::Pheme.logger.info(payload.to_json)
-      Ws::Pheme.configuration.sns_client.publish(topic_arn: topic_arn, message: serialize(message))
+
+      serialized_message = serialize(message)
+      Retryable.with_context(:sns) do
+        Ws::Pheme.configuration.sns_client.publish(topic_arn: topic_arn, message: serialized_message)
+      end
     end
 
     def serialize(message)

@@ -22,6 +22,18 @@ module Ws::Pheme
     def initialize
       @logger ||= Logger.new(STDOUT)
       @logger = ActiveSupport::TaggedLogging.new(@logger) unless @logger.respond_to?(:tagged)
+      Retryable.configure do |config|
+        config.contexts[:sns] = {
+            on: [Errno::EBADF],
+            sleep: 1,
+            tries: 3,
+        }
+        config.contexts[:queue_poller] = {
+            on: [Errno::EBADF],
+            sleep: 1,
+            tries: 3,
+        }
+      end
     end
 
     def validate!

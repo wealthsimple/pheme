@@ -39,7 +39,7 @@ module Ws::Pheme
               content = parse_body(queue_message)
               metadata = parse_metadata(queue_message)
               handle(content, metadata)
-              queue_poller.delete_message(queue_message)
+              Retryable.with_context(:queue_poller) { queue_poller.delete_message(queue_message) }
               log_delete(queue_message)
               @messages_processed += 1
             rescue SignalException

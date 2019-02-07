@@ -112,6 +112,40 @@ describe Ws::Pheme::QueuePoller do
       end
     end
 
+    context 'retries on Errno::EBADF' do
+      subject { ExampleQueuePoller.new(queue_url: queue_url, connection_pool_block: false) }
+      let(:message) { { status: 'complete' } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
+      let!(:queue_message) do
+        OpenStruct.new(
+          body: notification.to_json,
+          message_id: message_id,
+        )
+      end
+
+      before(:each) do
+        allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
+      end
+
+      it "one retry" do
+        call_count = 0
+        allow(subject.queue_poller).to receive(:delete_message) do
+          call_count += 1
+          raise Errno::EBADF if call_count <= 1
+
+          return queue_message
+        end
+        expect(subject.queue_poller).to receive(:delete_message).twice
+        subject.poll
+      end
+
+      it "never succeeds" do
+        allow(subject.queue_poller).to receive(:delete_message).and_raise(Errno::EBADF)
+        expect(subject.queue_poller).to receive(:delete_message).at_most(3).times
+        subject.poll
+      end
+    end
+
     context "with connection pool block" do
       let(:mock_connection_pool) { double }
       subject { ExampleQueuePoller.new(queue_url: queue_url, connection_pool_block: true) }

@@ -2,6 +2,7 @@ require 'active_support/all'
 require 'recursive-open-struct'
 require 'aws-sdk-sns'
 require 'aws-sdk-sqs'
+require 'retryable'
 require 'securerandom'
 require 'smarter_csv'
 

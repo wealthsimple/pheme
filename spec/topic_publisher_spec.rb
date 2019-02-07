@@ -35,28 +35,25 @@ describe Ws::Pheme::TopicPublisher do
       })
       subject.publish_events
     end
+  end
+
+  describe "#publish" do
+    let(:topic_arn) { "arn:aws:sns:anything" }
+    let(:message) { "don't touch my string" }
+    subject { Ws::Pheme::TopicPublisher.new(topic_arn: topic_arn).publish(message) }
 
     context 'with string message' do
-      let(:topic_arn) { "arn:aws:sns:anything" }
-      let(:message) { "don't touch my string" }
-
-      subject { Ws::Pheme::TopicPublisher.new(topic_arn: topic_arn) }
-
       it "publishes unchanged message" do
         expect(Ws::Pheme.configuration.sns_client).to receive(:publish).with({
           topic_arn: topic_arn,
           message: message,
         })
-        subject.publish(message)
+        subject
       end
     end
 
     context 'with message too large' do
-      let(:topic_arn) { "arn:aws:sns:anything" }
       let(:message) { 'x' * (described_class::MESSAGE_SIZE_LIMIT + 1) }
-
-      subject { Ws::Pheme::TopicPublisher.new(topic_arn: topic_arn).publish(message) }
-
       let(:compressed_message) do
         gz = Zlib::GzipWriter.new(StringIO.new)
         gz << message
@@ -73,6 +70,25 @@ describe Ws::Pheme::TopicPublisher do
         )
 
         subject
+      end
+    end
+
+    context 'retries on Errno::EBADF' do
+      it "one retry" do
+        call_count = 0
+        allow(Ws::Pheme.configuration.sns_client).to receive(:publish) do
+          call_count += 1
+          raise Errno::EBADF if call_count <= 1
+        end
+        expect(Ws::Pheme.configuration.sns_client).to receive(:publish).twice
+        subject
+      end
+
+      it "never succeeds" do
+        allow(Ws::Pheme.configuration.sns_client).to receive(:publish).and_raise(Errno::EBADF)
+        expect(Ws::Pheme.configuration.sns_client).to receive(:publish).at_most(3).times
+
+        expect { subject }.to raise_error(Errno::EBADF)
       end
     end
   end
