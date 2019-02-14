@@ -52,7 +52,7 @@ jobs:
       - checkout
       - *which_bundler
       - *bundle_install
-      - *run_rspec
+      - run: bundle exec rspec
       - store_test_results:
           path: test_results
 
