@@ -40,10 +40,10 @@ references:
       name: Run rspec
       command: |
         COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} \
-          bundle exec rspec --require spec_helper \
-                            --format RspecJunitFormatter \
-                            --out test_results/rspec.xml \
-                            --format documentation
+        bundle exec rspec --require spec_helper \
+                          --format RspecJunitFormatter \
+                          --out test_results/rspec.xml \
+                          --format documentation
 
 jobs:
   checkout_and_bundle_2_4_5:
