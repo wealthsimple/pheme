@@ -16,8 +16,11 @@ module Pheme
   end
 
   class Configuration
-    ATTRIBUTES = %i[sns_client sqs_client logger rollbar].freeze
+    ATTRIBUTES = %i[sns_client sqs_client logger].freeze
+    OPTIONAL_ATTRIBUTES = %i[rollbar].freeze
+
     attr_accessor(*ATTRIBUTES)
+    attr_accessor(*OPTIONAL_ATTRIBUTES)
 
     def initialize
       @logger ||= Logger.new(STDOUT) # rubocop:disable Lint/DisjunctiveAssignmentInConstructor
