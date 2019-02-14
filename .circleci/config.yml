@@ -39,6 +39,7 @@ references:
     run:
       name: Run rspec
       command: |
+        COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} \
         bundle exec rspec --require spec_helper \
                           --format RspecJunitFormatter \
                           --out test_results/rspec.xml \

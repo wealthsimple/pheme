@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.homepage      = "https://github.com/wealthsimple/pheme"
 
   s.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
-  s.executables   = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  s.executables   = s.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
   s.license       = "MIT"
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
   s.add_dependency "smarter_csv", "~> 1"
 
   s.add_development_dependency 'bundler'
+  s.add_development_dependency 'coveralls'
   s.add_development_dependency 'git'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'

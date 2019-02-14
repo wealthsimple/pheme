@@ -2,11 +2,11 @@ require 'git'
 
 describe Pheme do
   def get_version(git, branch = 'HEAD')
-    git.grep('VERSION = ', 'lib/*/version.rb', { object: branch })
-        .map { |_sha, matches| matches.first[1] }
-        .map(&method(:parse_version))
-        .reject(&:nil?)
-        .first
+    git.grep('VERSION = ', 'lib/*/version.rb', { object: branch }).
+      map { |_sha, matches| matches.first[1] }.
+      map(&method(:parse_version)).
+      reject(&:nil?).
+      first
   end
 
   def parse_version(string)
