@@ -36,5 +36,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-collection_matchers'
   s.add_development_dependency 'rspec-its'
   s.add_development_dependency 'rspec_junit_formatter', '~> 0.2'
+  s.add_development_dependency 'simplecov'
   s.add_development_dependency 'ws-style'
 end

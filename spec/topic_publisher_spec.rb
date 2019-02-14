@@ -1,6 +1,14 @@
 describe Pheme::TopicPublisher do
   before(:each) { use_default_configuration! }
 
+  context 'base publisher' do
+    subject { described_class.new(topic_arn: 'arn::foo::bar').publish_events }
+
+    it 'does not implement handle' do
+      expect { subject }.to raise_error(NotImplementedError)
+    end
+  end
+
   describe ".new" do
     context "when initialized with valid params" do
       it "does not raise an error" do

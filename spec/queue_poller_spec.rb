@@ -2,6 +2,14 @@ describe Pheme::QueuePoller do
   let(:queue_url) { "https://sqs.us-east-1.amazonaws.com/whatever" }
   let(:timestamp) { '2018-04-17T21:45:05.915Z' }
 
+  context 'base poller' do
+    subject { described_class.new(queue_url: 'https://sqs.aws.com').handle(nil, nil) }
+
+    it 'does not implement handle' do
+      expect { subject }.to raise_error(NotImplementedError)
+    end
+  end
+
   describe ".new" do
     context "when initialized with valid params" do
       it "does not raise an error" do
@@ -27,6 +35,22 @@ describe Pheme::QueuePoller do
       it "should set custom sqs_client" do
         expect(Aws::SQS::QueuePoller).to receive(:new).with("queue_url", client: sqs_client)
         ExampleQueuePoller.new(queue_url: "queue_url", sqs_client: sqs_client)
+      end
+    end
+
+    context 'received too many messages' do
+      let(:aws_poller) { instance_double('Aws::SQS::QueuePoller') }
+      let(:max_messages) { 50 }
+
+      before do
+        allow(Aws::SQS::QueuePoller).to receive(:new).and_return(aws_poller)
+        allow(aws_poller).to receive(:before_request).and_yield(OpenStruct.new(received_message_count: max_messages))
+      end
+
+      subject { described_class.new(queue_url: 'http://sqs.aws.com', max_messages: max_messages) }
+
+      it 'throws error' do
+        expect { subject }.to raise_error(UncaughtThrowError, /stop_polling/)
       end
     end
   end
@@ -244,6 +268,28 @@ describe Pheme::QueuePoller do
 
       it "logs the message" do
         subject.poll
+      end
+    end
+
+    context 'SignalException' do
+      let(:message) { { status: 'complete' } }
+      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
+      let!(:queue_message) do
+        OpenStruct.new(
+          body: notification.to_json,
+          message_id: message_id,
+        )
+      end
+
+      before do
+        allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
+        allow(subject.queue_poller).to receive(:delete_message).and_raise(SignalException.new('KILL'))
+      end
+
+      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+
+      it 'stops polling' do
+        expect { subject.poll }.to raise_error(UncaughtThrowError, /stop_polling/)
       end
     end
   end
