@@ -24,7 +24,7 @@ module Pheme
     end
 
     def initialize(topic_arn: self.class._topic_arn)
-      raise ArgumentError, "must specify non-nil topic_arn" unless topic_arn.present?
+      raise ArgumentError, "must specify non-nil topic_arn" if topic_arn.blank?
 
       @topic_arn = topic_arn
     end

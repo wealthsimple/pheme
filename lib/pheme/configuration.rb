@@ -26,7 +26,7 @@ module Pheme
 
     def validate!
       ATTRIBUTES.each do |attribute|
-        raise "Invalid or missing configuration for #{attribute}"  unless send(attribute).present?
+        raise "Invalid or missing configuration for #{attribute}" if send(attribute).blank?
       end
       raise "sns_client must be a Aws::SNS::Client"  unless sns_client.is_a?(Aws::SNS::Client)
       raise "sns_client must be a Aws::SQS::Client"  unless sqs_client.is_a?(Aws::SQS::Client)

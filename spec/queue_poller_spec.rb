@@ -75,7 +75,7 @@ describe Pheme::QueuePoller do
       let(:message) { 'unkonwn' }
 
       it "should raise error" do
-        expect{ subject }.to raise_error(ArgumentError)
+        expect { subject }.to raise_error(ArgumentError)
       end
     end
 

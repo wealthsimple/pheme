@@ -7,7 +7,7 @@ module Pheme
     attr_accessor :queue_url, :queue_poller, :connection_pool_block, :format, :max_messages, :poller_configuration
 
     def initialize(queue_url:, connection_pool_block: false, max_messages: nil, format: :json, poller_configuration: {}, sqs_client: nil)
-      raise ArgumentError, "must specify non-nil queue_url" unless queue_url.present?
+      raise ArgumentError, "must specify non-nil queue_url" if queue_url.blank?
 
       @queue_url = queue_url
       @queue_poller = Aws::SQS::QueuePoller.new(queue_url, client: sqs_client)
@@ -95,7 +95,7 @@ module Pheme
 
     def parse_csv(message_contents)
       parsed_body = SmarterCSV.process(StringIO.new(message_contents))
-      parsed_body.map{ |item| RecursiveOpenStruct.new(item, recurse_over_arrays: true) }
+      parsed_body.map { |item| RecursiveOpenStruct.new(item, recurse_over_arrays: true) }
     end
 
     def parse_json(message_contents)
