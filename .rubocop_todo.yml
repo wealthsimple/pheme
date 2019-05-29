@@ -20,12 +20,16 @@ RSpec/ContextWording:
 # Configuration parameters: CustomTransform, IgnoreMethods.
 RSpec/FilePath:
   Exclude:
+    - 'spec/configuration_spec.rb'
+    - 'spec/logger_spec.rb'
     - 'spec/message_handler_spec.rb'
     - 'spec/message_type/aws_event_spec.rb'
     - 'spec/message_type/sns_message_spec.rb'
     - 'spec/queue_poller_spec.rb'
+    - 'spec/rollbar_spec.rb'
     - 'spec/topic_publisher_spec.rb'
-
+    - 'spec/version_spec.rb'
+    
 # Offense count: 14
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: have_received, receive
