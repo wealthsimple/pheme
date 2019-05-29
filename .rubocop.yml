@@ -36,6 +36,9 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Max: 22
 
+RSpec/FilePath:
+  Enabled: false
+
 # Offense count: 1
 # Configuration parameters: MinBodyLength.
 Style/GuardClause:
