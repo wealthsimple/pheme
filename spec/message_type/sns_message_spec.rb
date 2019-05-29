@@ -15,7 +15,7 @@ describe Pheme::MessageType::SnsMessage do
     poller
   end
 
-  before(:each) do
+  before do
     use_default_configuration!
     allow(Aws::SQS::QueuePoller).to receive(:new) { poller }
   end
@@ -24,7 +24,7 @@ describe Pheme::MessageType::SnsMessage do
     context "with JSON message" do
       let!(:message) { OpenStruct.new({ body: '{"Message":"{\"test\":\"test\"}"}' }) }
 
-      it 'should parse the message correctly' do
+      it 'parses the message correctly' do
         expect(subject.parse_body(message).test).to eq("test")
       end
     end

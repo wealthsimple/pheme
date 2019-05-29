@@ -24,7 +24,7 @@ RSpec.configure do |config|
 
   ENV['AWS_REGION'] = 'us-east-1'
 
-  config.before(:each) do
+  config.before do
     Pheme.reset_configuration!
   end
 end

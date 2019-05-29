@@ -3,6 +3,7 @@ describe Pheme do
     let(:sns_client) { double }
     let(:sqs_client) { double }
     let(:custom_logger) { double }
+
     it "sets global configuration" do
       expect(described_class.configuration.sns_client).to be_nil
       expect(described_class.configuration.sqs_client).to be_nil

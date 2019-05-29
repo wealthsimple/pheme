@@ -2,6 +2,16 @@ describe Pheme::QueuePoller do
   let(:queue_url) { "https://sqs.us-east-1.amazonaws.com/whatever" }
   let(:timestamp) { '2018-04-17T21:45:05.915Z' }
 
+  let!(:queue_message) do
+    OpenStruct.new(
+      body: { Message: message }.to_json,
+      message_id: message_id,
+    )
+  end
+  let(:message) { nil }
+  let(:message_id) { SecureRandom.uuid }
+  let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: format) }
+
   context 'base poller' do
     subject { described_class.new(queue_url: 'https://sqs.aws.com').handle(nil, nil) }
 
@@ -24,7 +34,7 @@ describe Pheme::QueuePoller do
     end
 
     context "when initialized with max_messages" do
-      it "should set max_messages" do
+      it "sets max_messages" do
         expect(ExampleQueuePoller.new(queue_url: "queue_url", max_messages: 5).max_messages).to eq(5)
       end
     end
@@ -32,13 +42,15 @@ describe Pheme::QueuePoller do
     context "when initialized with sqs_client" do
       let(:sqs_client) { Object.new }
 
-      it "should set custom sqs_client" do
+      it "sets custom sqs_client" do
         expect(Aws::SQS::QueuePoller).to receive(:new).with("queue_url", client: sqs_client)
         ExampleQueuePoller.new(queue_url: "queue_url", sqs_client: sqs_client)
       end
     end
 
     context 'received too many messages' do
+      subject { described_class.new(queue_url: 'http://sqs.aws.com', max_messages: max_messages) }
+
       let(:aws_poller) { instance_double('Aws::SQS::QueuePoller') }
       let(:max_messages) { 50 }
 
@@ -47,22 +59,10 @@ describe Pheme::QueuePoller do
         allow(aws_poller).to receive(:before_request).and_yield(OpenStruct.new(received_message_count: max_messages))
       end
 
-      subject { described_class.new(queue_url: 'http://sqs.aws.com', max_messages: max_messages) }
-
       it 'throws error' do
         expect { subject }.to raise_error(UncaughtThrowError, /stop_polling/)
       end
     end
-  end
-
-  let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: format) }
-  let(:message_id) { SecureRandom.uuid }
-  let(:message) { nil }
-  let!(:queue_message) do
-    OpenStruct.new(
-      body: { Message: message }.to_json,
-      message_id: message_id,
-    )
   end
 
   describe "#parse_body" do
@@ -71,6 +71,7 @@ describe Pheme::QueuePoller do
     context "message is JSON string" do
       let(:format) { :json }
       let!(:message) { { test: 'test' }.to_json }
+
       its([:test]) { is_expected.to eq('test') }
     end
 
@@ -98,7 +99,7 @@ describe Pheme::QueuePoller do
       let(:format) { :invalid_format }
       let(:message) { 'unkonwn' }
 
-      it "should raise error" do
+      it "raises error" do
         expect { subject }.to raise_error(ArgumentError)
       end
     end
@@ -128,7 +129,7 @@ describe Pheme::QueuePoller do
   end
 
   describe "#poll" do
-    before(:each) do
+    before do
       module ActiveRecord
         class Base
           def self.connection_pool; end
@@ -137,8 +138,10 @@ describe Pheme::QueuePoller do
     end
 
     context "with connection pool block" do
-      let(:mock_connection_pool) { double }
       subject { ExampleQueuePoller.new(queue_url: queue_url, connection_pool_block: true) }
+
+      let(:mock_connection_pool) { double }
+
       let(:message) { { status: 'complete' } }
       let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
       let!(:queue_message) do
@@ -148,7 +151,7 @@ describe Pheme::QueuePoller do
         )
       end
 
-      before(:each) do
+      before do
         allow(ActiveRecord::Base).to receive(:connection_pool) { mock_connection_pool }
         allow(mock_connection_pool).to receive(:with_connection).and_yield
         allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
@@ -163,6 +166,7 @@ describe Pheme::QueuePoller do
 
     context "without connection pool block" do
       subject { ExampleQueuePoller.new(queue_url: queue_url) }
+
       let(:message) { { status: 'complete' } }
       let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
       let!(:queue_message) do
@@ -172,7 +176,7 @@ describe Pheme::QueuePoller do
         )
       end
 
-      before(:each) do
+      before do
         allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
         allow(subject.queue_poller).to receive(:delete_message).with(queue_message)
       end
@@ -185,6 +189,7 @@ describe Pheme::QueuePoller do
 
     context "when a valid message is yielded" do
       subject { ExampleQueuePoller.new(queue_url: queue_url) }
+
       let(:message) { { id: "id-123", status: "complete" } }
       let(:notification) do
         {
@@ -201,7 +206,7 @@ describe Pheme::QueuePoller do
         )
       end
 
-      before(:each) do
+      before do
         allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
         allow(subject.queue_poller).to receive(:delete_message).with(queue_message)
       end
@@ -219,6 +224,7 @@ describe Pheme::QueuePoller do
 
     context "when an invalid message is yielded" do
       subject { ExampleQueuePoller.new(queue_url: queue_url) }
+
       let(:message) { { id: "id-123", status: "unknown-abc" } }
       let(:notification) do
         {
@@ -235,7 +241,7 @@ describe Pheme::QueuePoller do
         )
       end
 
-      before(:each) do
+      before do
         allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
         allow(subject.queue_poller).to receive(:delete).with(queue_message)
         allow(Pheme.logger).to receive(:error)
@@ -257,11 +263,13 @@ describe Pheme::QueuePoller do
 
     context "AWS-event message" do
       subject { ExampleAwsEventQueuePoller.new(queue_url: queue_url) }
+
       let(:queue_message) { OpenStruct.new(body: { 'Records' => records }.to_json) }
       let(:records) do
         [{ 'eventVersion' => '2.0', 'eventSource': 'aws:s3' }]
       end
-      before(:each) do
+
+      before do
         allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
         allow(subject.queue_poller).to receive(:delete).with(queue_message)
       end
@@ -272,6 +280,8 @@ describe Pheme::QueuePoller do
     end
 
     context 'SignalException' do
+      subject { ExampleQueuePoller.new(queue_url: queue_url) }
+
       let(:message) { { status: 'complete' } }
       let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
       let!(:queue_message) do
@@ -285,8 +295,6 @@ describe Pheme::QueuePoller do
         allow(subject.queue_poller).to receive(:poll).and_yield(queue_message)
         allow(subject.queue_poller).to receive(:delete_message).and_raise(SignalException.new('KILL'))
       end
-
-      subject { ExampleQueuePoller.new(queue_url: queue_url) }
 
       it 'stops polling' do
         expect { subject.poll }.to raise_error(UncaughtThrowError, /stop_polling/)

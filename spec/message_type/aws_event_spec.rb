@@ -15,6 +15,7 @@ describe Pheme::MessageType::AwsEvent do
 
     context "with JSON message" do
       let!(:records) { [{ 'eventVersion' => '2.0' }] }
+
       its('first.eventVersion') { is_expected.to eq('2.0') }
     end
   end
