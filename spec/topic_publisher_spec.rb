@@ -57,6 +57,18 @@ describe Pheme::TopicPublisher do
         })
         subject.publish(message)
       end
+
+      context 'with an explicit sns client' do
+        let(:sns_client) { double() }
+        
+        it "publishes unchanged message" do
+          expect(sns_client).to receive(:publish).with({
+            topic_arn: topic_arn,
+            message: message,
+          })
+          subject.publish(message, sns_client: sns_client)
+        end
+      end
     end
 
     context 'with message too large' do
