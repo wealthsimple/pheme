@@ -6,7 +6,15 @@ module Pheme
 
     attr_accessor :queue_url, :queue_poller, :connection_pool_block, :format, :max_messages, :poller_configuration
 
-    def initialize(queue_url:, connection_pool_block: false, max_messages: nil, format: :json, poller_configuration: {}, sqs_client: nil)
+    def initialize(queue_url:,
+                   connection_pool_block: false,
+                   max_messages: nil,
+                   format: :json,
+                   poller_configuration: {},
+                   sqs_client: nil,
+                   idle_timeout: nil,
+                   message_handler: nil,
+                   &block_message_handler)
       raise ArgumentError, "must specify non-nil queue_url" if queue_url.blank?
 
       @queue_url = queue_url
@@ -21,6 +29,20 @@ module Pheme
         idle_timeout: 20, # disconnects poller after 20 seconds of idle time
         skip_delete: true, # manually delete messages
       }.merge(poller_configuration || {})
+
+      @poller_configuration[:idle_timeout] = idle_timeout unless idle_timeout.nil?
+
+      if message_handler
+        if message_handler.ancestors.include?(Pheme::MessageHandler)
+          @message_handler = message_handler
+        else
+          raise ArgumentError, 'Invalid message handler, must inherit from Pheme::MessageHandler'
+        end
+      end
+
+      @block_message_handler = block_message_handler
+
+      raise ArgumentError, 'only provide a message_handler or a block, not both' if @message_handler && @block_message_handler
 
       if max_messages
         queue_poller.before_request do |stats|
@@ -103,8 +125,14 @@ module Pheme
       RecursiveOpenStruct.new({ wrapper: parsed_body }, recurse_over_arrays: true).wrapper
     end
 
-    def handle(_message, _metadata)
-      raise NotImplementedError
+    def handle(message, metadata)
+      if @message_handler
+        @message_handler.new(message: message, metadata: metadata).handle
+      elsif @block_message_handler
+        @block_message_handler.call(message, metadata)
+      else
+        raise NotImplementedError
+      end
     end
 
     private

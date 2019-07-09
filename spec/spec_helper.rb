@@ -16,8 +16,6 @@ require 'pp'
 
 require './lib/pheme'
 
-Dir["./spec/support/**/*.rb"].each { |f| require f }
-
 RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
@@ -36,3 +34,5 @@ def use_default_configuration!
     config.logger = Logger.new(nil)
   end
 end
+
+Dir["./spec/support/**/*.rb"].each { |f| require f }
