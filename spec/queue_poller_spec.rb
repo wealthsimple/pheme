@@ -1,4 +1,5 @@
 describe Pheme::QueuePoller do
+  let(:valid_queue_poller) { ExampleQueuePoller.new(queue_url: queue_url) }
   let(:queue_url) { "https://sqs.us-east-1.amazonaws.com/whatever" }
   let(:timestamp) { '2018-04-17T21:45:05.915Z' }
 
@@ -10,10 +11,9 @@ describe Pheme::QueuePoller do
   end
   let(:message) { nil }
   let(:message_id) { SecureRandom.uuid }
-  let(:poller) { ExampleQueuePoller.new(queue_url: queue_url, format: format) }
 
   context 'base poller' do
-    subject { described_class.new(queue_url: 'https://sqs.aws.com').handle(nil, nil) }
+    subject { described_class.new(queue_url: queue_url).handle(nil, nil) }
 
     it 'does not implement handle' do
       expect { subject }.to raise_error(NotImplementedError)
@@ -23,7 +23,7 @@ describe Pheme::QueuePoller do
   describe ".new" do
     context "when initialized with valid params" do
       it "does not raise an error" do
-        expect { ExampleQueuePoller.new(queue_url: "queue_url") }.not_to raise_error
+        expect { valid_queue_poller }.not_to raise_error
       end
     end
 
@@ -35,7 +35,7 @@ describe Pheme::QueuePoller do
 
     context "when initialized with max_messages" do
       it "sets max_messages" do
-        expect(ExampleQueuePoller.new(queue_url: "queue_url", max_messages: 5).max_messages).to eq(5)
+        expect(ExampleQueuePoller.new(queue_url: queue_url, max_messages: 5).max_messages).to eq(5)
       end
     end
 
@@ -43,13 +43,13 @@ describe Pheme::QueuePoller do
       let(:sqs_client) { Object.new }
 
       it "sets custom sqs_client" do
-        expect(Aws::SQS::QueuePoller).to receive(:new).with("queue_url", client: sqs_client)
-        ExampleQueuePoller.new(queue_url: "queue_url", sqs_client: sqs_client)
+        expect(Aws::SQS::QueuePoller).to receive(:new).with(queue_url, client: sqs_client)
+        ExampleQueuePoller.new(queue_url: queue_url, sqs_client: sqs_client)
       end
     end
 
     context 'received too many messages' do
-      subject { described_class.new(queue_url: 'http://sqs.aws.com', max_messages: max_messages) }
+      subject { described_class.new(queue_url: queue_url, max_messages: max_messages) }
 
       let(:aws_poller) { instance_double('Aws::SQS::QueuePoller') }
       let(:max_messages) { 50 }
@@ -63,10 +63,81 @@ describe Pheme::QueuePoller do
         expect { subject }.to raise_error(UncaughtThrowError, /stop_polling/)
       end
     end
+
+    context 'when given an idle_timeout' do
+      subject { ExampleQueuePoller.new(queue_url: queue_url, idle_timeout: idle_timeout).poller_configuration[:idle_timeout] }
+
+      context 'when given a number' do
+        let(:idle_timeout) { 5 }
+
+        it { is_expected.to eq(5) }
+      end
+
+      context 'when given nil' do
+        let(:idle_timeout) { nil }
+
+        it { is_expected.to eq(20) }
+      end
+
+      context 'when given false' do
+        let(:idle_timeout) { false }
+
+        it { is_expected.to be(false) }
+      end
+    end
+
+    context 'when handling messages' do
+      context 'when doing it the old way, via the handle function' do
+        it 'uses the handle function by default' do
+          expect { described_class.new(queue_url: queue_url).handle(nil, nil) }.to raise_error(NotImplementedError)
+        end
+      end
+
+      context 'when given a message_handler as parameter' do
+        it 'uses default when given nil' do
+          expect { described_class.new(queue_url: queue_url, message_handler: nil).handle(nil, nil) }.to raise_error(NotImplementedError)
+        end
+
+        it 'uses default when given invalid message_handler' do
+          expect { described_class.new(queue_url: queue_url, message_handler: Hash) }.to raise_error(ArgumentError)
+        end
+
+        it 'uses handler when given one' do
+          mock_handler = double('MessageHandler')
+          allow(mock_handler).to receive(:handle)
+          allow(ExampleMessageHandler).to receive(:new).with(message: 'message', metadata: 'metadata').and_return(mock_handler)
+
+          described_class.new(queue_url: queue_url, message_handler: ExampleMessageHandler).handle('message', 'metadata')
+          expect(mock_handler).to have_received(:handle).once
+        end
+      end
+
+      context 'when given a message_handler as block' do
+        it 'uses handler when given one' do
+          mock_handler = spy('MessageHandler')
+
+          poller = described_class.new(queue_url: queue_url) do |message, metadata|
+            mock_handler.process(message, metadata)
+          end
+          poller.handle('message', 'metadata')
+
+          expect(mock_handler).to have_received(:process).with('message', 'metadata').once
+        end
+
+        it 'fails on invalid handler' do
+          expect do
+            described_class.new(queue_url: queue_url, message_handler: ExampleMessageHandler) { raise Error('should never happen') }
+          end.to raise_error(ArgumentError, 'only provide a message_handler or a block, not both')
+        end
+      end
+    end
   end
 
   describe "#parse_body" do
     subject { poller.parse_body(queue_message) }
+
+    let(:format) { nil }
+    let(:poller) { described_class.new(queue_url: queue_url, format: format) }
 
     context "message is JSON string" do
       let(:format) { :json }
