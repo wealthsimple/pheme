@@ -25,7 +25,7 @@ describe Pheme do
     describe '.validate!' do
       subject { configuration.validate! }
 
-      let(:configuration) { Pheme::Configuration.new }
+      let(:configuration) { described_class.new }
 
       context 'empty configuration' do
         it 'is invalid when empty' do

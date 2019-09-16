@@ -53,23 +53,21 @@ module Pheme
 
     def poll
       time_start = log_polling_start
-      with_optional_connection_pool_block do
-        queue_poller.poll(poller_configuration) do |queue_message|
-          @messages_received += 1
-          Pheme.logger.tagged(queue_message.message_id) do
-            begin
-              content = parse_body(queue_message)
-              metadata = parse_metadata(queue_message)
-              handle(content, metadata)
-              queue_poller.delete_message(queue_message)
-              log_delete(queue_message)
-              @messages_processed += 1
-            rescue SignalException
-              throw :stop_polling
-            rescue StandardError => e
-              Pheme.logger.error(e)
-              Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
-            end
+      queue_poller.poll(poller_configuration) do |queue_message|
+        @messages_received += 1
+        Pheme.logger.tagged(queue_message.message_id) do
+          begin
+            content = parse_body(queue_message)
+            metadata = parse_metadata(queue_message)
+            with_optional_connection_pool_block { handle(content, metadata) }
+            queue_poller.delete_message(queue_message)
+            log_delete(queue_message)
+            @messages_processed += 1
+          rescue SignalException
+            throw :stop_polling
+          rescue StandardError => e
+            Pheme.logger.error(e)
+            Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
           end
         end
       end

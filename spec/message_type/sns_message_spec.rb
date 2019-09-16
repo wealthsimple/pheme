@@ -1,10 +1,4 @@
 describe Pheme::MessageType::SnsMessage do
-  module SnsMessage
-    class Fixture < ExampleQueuePoller
-      include Pheme::MessageType::SnsMessage
-    end
-  end
-
   subject { SnsMessage::Fixture.new }
 
   let(:poller) do
@@ -16,6 +10,12 @@ describe Pheme::MessageType::SnsMessage do
   end
 
   before do
+    test_class = Class.new(ExampleQueuePoller) do
+      include Pheme::MessageType::SnsMessage
+    end
+
+    stub_const('SnsMessage::Fixture', test_class)
+
     use_default_configuration!
     allow(Aws::SQS::QueuePoller).to receive(:new) { poller }
   end
