@@ -201,11 +201,11 @@ describe Pheme::QueuePoller do
 
   describe "#poll" do
     before do
-      module ActiveRecord
-        class Base
-          def self.connection_pool; end
-        end
+      active_record_stub = Class.new do
+        def connection_pool; end
       end
+
+      stub_const('ActiveRecord::Base', active_record_stub)
     end
 
     context "with connection pool block" do
