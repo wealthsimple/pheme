@@ -63,18 +63,16 @@ module Pheme
             queue_poller.delete_message(queue_message)
             log_delete(queue_message)
             @messages_processed += 1
-          rescue SignalException, PG::UnableToSend
+          rescue SignalException
             throw :stop_polling
           rescue StandardError => e
-            if e.is_a?(PG::UnableToSend)
-
-              Pheme.logger.error(e)
-              Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
-            end
+            Pheme.logger.error(e)
+            Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
           end
         end
       end
       log_polling_end(time_start)
+    end
 
     # returns queue_message.body as hash,
     # stores and parses get_content to body[:content]
