@@ -183,6 +183,7 @@ describe Pheme::QueuePoller do
       it { is_expected.to be_a(Array) }
       its(:first) { is_expected.to be_a(Array) }
       its('first.first') { is_expected.to be_a(RecursiveOpenStruct) }
+
       it "parses the nested object" do
         expect(subject.first.first.test).to eq('test')
       end
