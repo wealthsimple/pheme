@@ -102,7 +102,7 @@ module Pheme
 
     def parse_metadata(queue_message)
       message_body = JSON.parse(queue_message.body)
-      { timestamp: message_body['Timestamp'] }
+      { timestamp: message_body['Timestamp'], topic_arn: message_body['TopicArn'] }
     end
 
     def get_metadata(message_body)
