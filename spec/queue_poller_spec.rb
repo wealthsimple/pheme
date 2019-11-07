@@ -2,6 +2,7 @@ describe Pheme::QueuePoller do
   let(:valid_queue_poller) { ExampleQueuePoller.new(queue_url: queue_url) }
   let(:queue_url) { "https://sqs.us-east-1.amazonaws.com/whatever" }
   let(:timestamp) { '2018-04-17T21:45:05.915Z' }
+  let(:topic_arn) { 'arn:topic:test' }
 
   let!(:queue_message) do
     OpenStruct.new(
@@ -182,6 +183,7 @@ describe Pheme::QueuePoller do
       it { is_expected.to be_a(Array) }
       its(:first) { is_expected.to be_a(Array) }
       its('first.first') { is_expected.to be_a(RecursiveOpenStruct) }
+
       it "parses the nested object" do
         expect(subject.first.first.test).to eq('test')
       end
@@ -214,7 +216,15 @@ describe Pheme::QueuePoller do
       let(:mock_connection_pool) { double }
 
       let(:message) { { status: 'complete' } }
-      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
+      let(:notification) {
+        {
+          'MessageId' => SecureRandom.uuid,
+          'Message' => message.to_json,
+          'Type' => 'Notification',
+          'Timestamp' => timestamp,
+          'TopicArn' => topic_arn,
+        }
+      }
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
@@ -239,7 +249,15 @@ describe Pheme::QueuePoller do
       subject { ExampleQueuePoller.new(queue_url: queue_url) }
 
       let(:message) { { status: 'complete' } }
-      let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
+      let(:notification) {
+        {
+          'MessageId' => SecureRandom.uuid,
+          'Message' => message.to_json,
+          'Type' => 'Notification',
+          'Timestamp' => timestamp,
+          'TopicArn' => topic_arn,
+        }
+      }
       let!(:queue_message) do
         OpenStruct.new(
           body: notification.to_json,
@@ -268,6 +286,7 @@ describe Pheme::QueuePoller do
           'Message' => message.to_json,
           'Type' => 'Notification',
           'Timestamp' => timestamp,
+          'TopicArn' => topic_arn,
         }
       end
       let!(:queue_message) do
@@ -283,7 +302,10 @@ describe Pheme::QueuePoller do
       end
 
       it "handles the message" do
-        expect(ExampleMessageHandler).to receive(:new).with(message: RecursiveOpenStruct.new(message), metadata: { timestamp: timestamp })
+        expect(ExampleMessageHandler).to receive(:new).with(
+          message: RecursiveOpenStruct.new(message),
+          metadata: { timestamp: timestamp, topic_arn: topic_arn },
+        )
         subject.poll
       end
 
