@@ -59,7 +59,8 @@ module Pheme
           begin
             content = parse_body(queue_message)
             metadata = parse_metadata(queue_message)
-            with_optional_connection_pool_block { handle(content, metadata) }
+            message_attributes = parse_message_attributes(queue_message)
+            with_optional_connection_pool_block { handle(content, metadata, message_attributes) }
             queue_poller.delete_message(queue_message)
             log_delete(queue_message)
             @messages_processed += 1
@@ -105,6 +106,15 @@ module Pheme
       { timestamp: message_body['Timestamp'], topic_arn: message_body['TopicArn'] }
     end
 
+    def parse_message_attributes(queue_message)
+      message_attributes = {}
+      queue_message.message_attributes&.each do |key, value|
+        message_attributes[key.to_sym] = coerce_message_attribute(value)
+      end
+
+      message_attributes
+    end
+
     def get_metadata(message_body)
       message_body.except('Message', 'Records')
     end
@@ -123,17 +133,33 @@ module Pheme
       RecursiveOpenStruct.new({ wrapper: parsed_body }, recurse_over_arrays: true).wrapper
     end
 
-    def handle(message, metadata)
+    def handle(message, metadata, message_attributes)
       if @message_handler
-        @message_handler.new(message: message, metadata: metadata).handle
+        @message_handler.new(message: message, metadata: metadata, message_attributes: message_attributes).handle
       elsif @block_message_handler
-        @block_message_handler.call(message, metadata)
+        @block_message_handler.call(message, metadata, message_attributes)
       else
         raise NotImplementedError
       end
     end
 
     private
+
+    def coerce_message_attribute(value)
+      case value['data_type']
+      when 'String'
+        value['string_value']
+      when 'Number'
+        JSON.parse(value['string_value'])
+      when 'String.Array'
+        JSON.parse(value['string_value'])
+      when 'Binary'
+        value['binary_value']
+      else
+        Pheme.logger.info("Unsupported custom data type")
+        value["string_value"]
+      end
+    end
 
     def with_optional_connection_pool_block
       if connection_pool_block
