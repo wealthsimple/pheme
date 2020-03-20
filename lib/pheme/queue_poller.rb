@@ -1,6 +1,7 @@
 require_relative 'compression'
 
 module Pheme
+  # rubocop:disable Metrics/ClassLength
   class QueuePoller
     include Compression
 
@@ -51,6 +52,7 @@ module Pheme
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def poll
       time_start = log_polling_start
       queue_poller.poll(poller_configuration) do |queue_message|
@@ -74,6 +76,7 @@ module Pheme
       end
       log_polling_end(time_start)
     end
+    # rubocop:enable Metrics/AbcSize
 
     # returns queue_message.body as hash,
     # stores and parses get_content to body[:content]
@@ -157,7 +160,7 @@ module Pheme
         value['binary_value']
       else
         Pheme.logger.info("Unsupported custom data type")
-        value["string_value"]
+        value["binary_value"] || value["string_value"]
       end
     end
 
@@ -218,4 +221,5 @@ module Pheme
       }.to_json)
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
