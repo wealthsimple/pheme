@@ -14,7 +14,7 @@ describe Pheme::QueuePoller do
   let(:message_id) { SecureRandom.uuid }
 
   context 'base poller' do
-    subject { described_class.new(queue_url: queue_url).handle(nil, nil) }
+    subject { described_class.new(queue_url: queue_url).handle(nil, nil, nil) }
 
     it 'does not implement handle' do
       expect { subject }.to raise_error(NotImplementedError)
@@ -90,13 +90,13 @@ describe Pheme::QueuePoller do
     context 'when handling messages' do
       context 'when doing it the old way, via the handle function' do
         it 'uses the handle function by default' do
-          expect { described_class.new(queue_url: queue_url).handle(nil, nil) }.to raise_error(NotImplementedError)
+          expect { described_class.new(queue_url: queue_url).handle(nil, nil, nil) }.to raise_error(NotImplementedError)
         end
       end
 
       context 'when given a message_handler as parameter' do
         it 'uses default when given nil' do
-          expect { described_class.new(queue_url: queue_url, message_handler: nil).handle(nil, nil) }.to raise_error(NotImplementedError)
+          expect { described_class.new(queue_url: queue_url, message_handler: nil).handle(nil, nil, nil) }.to raise_error(NotImplementedError)
         end
 
         it 'uses default when given invalid message_handler' do
@@ -106,9 +106,11 @@ describe Pheme::QueuePoller do
         it 'uses handler when given one' do
           mock_handler = double('MessageHandler')
           allow(mock_handler).to receive(:handle)
-          allow(ExampleMessageHandler).to receive(:new).with(message: 'message', metadata: 'metadata').and_return(mock_handler)
+          allow(ExampleMessageHandler).to receive(:new).
+            with(message: 'message', metadata: 'metadata', message_attributes: 'message_attributes').
+            and_return(mock_handler)
 
-          described_class.new(queue_url: queue_url, message_handler: ExampleMessageHandler).handle('message', 'metadata')
+          described_class.new(queue_url: queue_url, message_handler: ExampleMessageHandler).handle('message', 'metadata', 'message_attributes')
           expect(mock_handler).to have_received(:handle).once
         end
       end
@@ -117,12 +119,12 @@ describe Pheme::QueuePoller do
         it 'uses handler when given one' do
           mock_handler = spy('MessageHandler')
 
-          poller = described_class.new(queue_url: queue_url) do |message, metadata|
-            mock_handler.process(message, metadata)
+          poller = described_class.new(queue_url: queue_url) do |message, metadata, message_attributes|
+            mock_handler.process(message, metadata, message_attributes)
           end
-          poller.handle('message', 'metadata')
+          poller.handle('message', 'metadata', 'message_attributes')
 
-          expect(mock_handler).to have_received(:process).with('message', 'metadata').once
+          expect(mock_handler).to have_received(:process).with('message', 'metadata', 'message_attributes').once
         end
 
         it 'fails on invalid handler' do
@@ -130,6 +132,63 @@ describe Pheme::QueuePoller do
             described_class.new(queue_url: queue_url, message_handler: ExampleMessageHandler) { raise Error('should never happen') }
           end.to raise_error(ArgumentError, 'only provide a message_handler or a block, not both')
         end
+      end
+    end
+  end
+
+  describe '#parse_message_attributes' do
+    subject { described_class.new(queue_url: queue_url).parse_message_attributes(queue_message) }
+
+    context 'when no message_attributes' do
+      it { is_expected.to eq({}) }
+    end
+
+    context 'when message attributes' do
+      let(:queue_message) do
+        OpenStruct.new(
+          body: { Message: message }.to_json,
+          message_id: message_id,
+          message_attributes: {
+            "key" => {
+              "data_type" => data_type,
+              "string_value" => string_value,
+            },
+          },
+        )
+      end
+
+      context 'when data_type is String' do
+        let(:data_type) { 'String' }
+        let(:string_value) { 'some-string-value' }
+        let(:expected_value) { 'some-string-value' }
+
+        its([:key]) { is_expected.to eq(expected_value) }
+      end
+
+      context 'when data_type is Number' do
+        let(:data_type) { 'Number' }
+
+        context 'and it is an int' do
+          let(:string_value) { '1' }
+          let(:expected_value) { 1 }
+
+          its([:key]) { is_expected.to eq(expected_value) }
+        end
+
+        context 'and it is a float' do
+          let(:string_value) { '1.5' }
+          let(:expected_value) { 1.5 }
+
+          its([:key]) { is_expected.to eq(expected_value) }
+        end
+      end
+
+      context 'when data_type is String.array' do
+        let(:data_type) { 'String.Array' }
+        let(:string_value) { '["sdfsdf",1,2,null,true,false]' }
+        let(:expected_value) { ["sdfsdf", 1, 2, nil, true, false] }
+
+        its([:key]) { is_expected.to eq(expected_value) }
       end
     end
   end
@@ -305,6 +364,7 @@ describe Pheme::QueuePoller do
         expect(ExampleMessageHandler).to receive(:new).with(
           message: RecursiveOpenStruct.new(message),
           metadata: { timestamp: timestamp, topic_arn: topic_arn },
+          message_attributes: {},
         )
         subject.poll
       end
