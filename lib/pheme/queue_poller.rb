@@ -110,8 +110,9 @@ module Pheme
     end
 
     def parse_message_attributes(queue_message)
+      message_body = JSON.parse(queue_message.body)
       message_attributes = {}
-      queue_message.message_attributes&.each do |key, value|
+      message_body['MessageAttributes']&.each do |key, value|
         message_attributes[key.to_sym] = coerce_message_attribute(value)
       end
 
@@ -149,18 +150,18 @@ module Pheme
     private
 
     def coerce_message_attribute(value)
-      case value['data_type']
+      case value['Type']
       when 'String'
-        value['string_value']
+        value['Value']
       when 'Number'
-        JSON.parse(value['string_value'])
+        JSON.parse(value['Value'])
       when 'String.Array'
-        JSON.parse(value['string_value'])
+        JSON.parse(value['Value'])
       when 'Binary'
-        value['binary_value']
+        value['Value']
       else
         Pheme.logger.info("Unsupported custom data type")
-        value["binary_value"] || value["string_value"]
+        value["Value"]
       end
     end
 
