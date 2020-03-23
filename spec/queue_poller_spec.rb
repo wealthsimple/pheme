@@ -146,14 +146,13 @@ describe Pheme::QueuePoller do
     context 'when message attributes' do
       let(:queue_message) do
         OpenStruct.new(
-          body: { Message: message }.to_json,
-          message_id: message_id,
-          message_attributes: {
-            "key" => {
-              "data_type" => data_type,
-              "string_value" => string_value,
+          body: {
+            Message: message,
+            MessageAttributes: {
+              key: { Type: data_type, Value: string_value },
             },
-          },
+          }.to_json,
+          message_id: message_id,
         )
       end
 
