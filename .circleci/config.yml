@@ -114,12 +114,15 @@ workflows:
       - checkout_and_bundle:
           context: wealthsimple
       - rspec:
+          context: wealthsimple
           requires:
             - checkout_and_bundle
       - lint_check:
+          context: wealthsimple
           requires:
             - checkout_and_bundle
       - vulnerability_check:
+          context: wealthsimple
           requires:
             - checkout_and_bundle
       - release:
@@ -128,10 +131,10 @@ workflows:
             branches:
               only: master
           requires:
-          - checkout_and_bundle_2_4_5
-          - rspec
-          - lint_check
-          - vulnerability_check
+            - checkout_and_bundle_2_4_5
+            - rspec
+            - lint_check
+            - vulnerability_check
 
   security-audit:
     triggers:
@@ -145,5 +148,6 @@ workflows:
       - checkout_and_bundle:
           context: wealthsimple
       - vulnerability_check:
+          context: wealthsimple
           requires:
             - checkout_and_bundle
