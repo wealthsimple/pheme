@@ -2,17 +2,17 @@ version: 2
 
 references:
   defaults:
-    2_4_5: &defaults_2_4_5
+    2_4_10: &defaults_2_4_10
       working_directory: ~/wealthsimple
       docker:
-        - image: circleci/ruby:2.4.5
+        - image: circleci/ruby:2.4.10
           environment:
             RAILS_ENV: test
 
-    2_5_3: &defaults
+    2_5_8: &defaults
       working_directory: ~/wealthsimple
       docker:
-        - image: circleci/ruby:2.5.3
+        - image: circleci/ruby:2.5.8
           environment:
             RAILS_ENV: test
 
@@ -46,8 +46,8 @@ references:
           --format documentation
 
 jobs:
-  checkout_and_bundle_2_4_5:
-    <<: *defaults_2_4_5
+  checkout_and_bundle_2_4_10:
+    <<: *defaults_2_4_10
     environment:
       COVERALLS_REPO_TOKEN: ''
     steps:
@@ -109,7 +109,7 @@ workflows:
   version: 2
   build:
     jobs:
-      - checkout_and_bundle_2_4_5:
+      - checkout_and_bundle_2_4_10:
           context: wealthsimple
       - checkout_and_bundle:
           context: wealthsimple
@@ -131,7 +131,7 @@ workflows:
             branches:
               only: master
           requires:
-            - checkout_and_bundle_2_4_5
+            - checkout_and_bundle_2_4_10
             - rspec
             - lint_check
             - vulnerability_check
