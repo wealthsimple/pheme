@@ -165,9 +165,9 @@ module Pheme
       end
     end
 
-    def with_optional_connection_pool_block
+    def with_optional_connection_pool_block(&block)
       if connection_pool_block
-        ActiveRecord::Base.connection_pool.with_connection { yield }
+        ActiveRecord::Base.connection_pool.with_connection(&block)
       else
         yield
       end
