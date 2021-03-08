@@ -418,7 +418,7 @@ describe Pheme::QueuePoller do
 
       let(:queue_message) { OpenStruct.new(body: { 'Records' => records }.to_json) }
       let(:records) do
-        [{ 'eventVersion' => '2.0', 'eventSource': 'aws:s3' }]
+        [{ 'eventVersion' => '2.0', eventSource: 'aws:s3' }]
       end
 
       before do
