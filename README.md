@@ -39,3 +39,9 @@ end
 See https://github.com/wealthsimple/pheme/tree/master/spec/support for example implementations of each class.
 
 TODO: write better usage instructions.
+
+### Handling SQS messages
+
+Pheme expects that the SQS messages it is handling will have first been published to an SNS topic
+before being sent to the SQS queue. This means if the service publishing messages is publishing them
+**directly** to the SQS queue, that service must nest the message payload underneath a `Message` property.

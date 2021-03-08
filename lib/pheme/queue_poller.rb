@@ -151,14 +151,10 @@ module Pheme
 
     def coerce_message_attribute(value)
       case value['Type']
-      when 'String'
+      when 'Binary', 'String'
         value['Value']
-      when 'Number'
+      when 'Number', 'String.Array'
         JSON.parse(value['Value'])
-      when 'String.Array'
-        JSON.parse(value['Value'])
-      when 'Binary'
-        value['Value']
       else
         Pheme.logger.info("Unsupported custom data type")
         value["Value"]
