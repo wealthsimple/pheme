@@ -1,4 +1,4 @@
-# pheme [![CircleCI](https://circleci.com/gh/wealthsimple/pheme.svg?style=svg&circle-token=76942be0b1712ac066627be264886ee18039ad11)](https://circleci.com/gh/wealthsimple/pheme) [![Coverage Status](https://coveralls.io/repos/github/wealthsimple/pheme/badge.svg)](https://coveralls.io/github/wealthsimple/pheme)
+# pheme [![GitHub Actions Workflow Badge](https://github.com/wealthsimple/pheme/actions/workflows/master-workflow.yml/badge.svg)](https://github.com/wealthsimple/pheme/actions)
 
 Ruby SNS publisher + SQS poller & message handler
 
