@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pheme (4.0.4)
+    pheme (4.0.5)
       activesupport (>= 4)
       aws-sdk-sns (~> 1.1)
       aws-sdk-sqs (~> 1.3)
