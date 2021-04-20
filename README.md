@@ -1,4 +1,6 @@
-# pheme [![GitHub Actions Workflow Badge](https://github.com/wealthsimple/pheme/actions/workflows/master-workflow.yml/badge.svg)](https://github.com/wealthsimple/pheme/actions)
+# pheme
+
+[![GitHub Actions Workflow Badge](https://github.com/wealthsimple/pheme/actions/workflows/master-workflow.yml/badge.svg)](https://github.com/wealthsimple/pheme/actions)
 
 Ruby SNS publisher + SQS poller & message handler
 

@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.license       = "MIT"
 
-  s.required_ruby_version = '>= 2.4'
+  s.required_ruby_version = '>= 2.7.3'
 
   s.add_dependency "activesupport", ">= 4"
   s.add_dependency "aws-sdk-sns", "~> 1.1"
@@ -29,7 +29,6 @@ Gem::Specification.new do |s|
   s.add_dependency "smarter_csv", "~> 1"
 
   s.add_development_dependency 'bundler'
-  s.add_development_dependency 'coveralls', "~> 0.8"
   s.add_development_dependency 'git'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
