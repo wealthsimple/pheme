@@ -1,8 +1,8 @@
 ---
-name: Pipeline
+name: Main
 on:
   push:
-    branches-ignore:
+    branches:
       - master
 jobs:
   build:
@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.DEVTOOLS_GITHUB_API_TOKEN }}
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -26,3 +28,8 @@ jobs:
         uses: wealthsimple/toolbox-script@v1
         with:
           script: await toolbox.ruby.test.run();
+      - name: Release
+        uses: wealthsimple/toolbox-script@v1
+        with:
+          script: await toolbox.ruby.publish.run();
+          nexus_gem_credentials_file: ${{ secrets.NEXUS_GEM_CREDENTIALS_FILE }}
