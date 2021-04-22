@@ -1,3 +1,3 @@
 module Pheme
-  VERSION = '4.0.5'.freeze
+  VERSION = '4.1.0'.freeze
 end
