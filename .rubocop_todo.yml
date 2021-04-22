@@ -47,6 +47,7 @@ RSpec/FilePath:
     - 'spec/queue_poller_spec.rb'
     - 'spec/rollbar_spec.rb'
     - 'spec/topic_publisher_spec.rb'
+    - 'spec/queue_publisher_spec.rb'
     - 'spec/version_spec.rb'
 
 # Offense count: 14
@@ -58,6 +59,7 @@ RSpec/MessageSpies:
     - 'spec/queue_poller_spec.rb'
     - 'spec/rollbar_spec.rb'
     - 'spec/topic_publisher_spec.rb'
+    - 'spec/queue_publisher_spec.rb'
 
 # Offense count: 2
 # Configuration parameters: IgnoreNameless, IgnoreSymbolicNames.

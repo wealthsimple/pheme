@@ -30,6 +30,10 @@ module Pheme
     end
     attr_accessor :queue_url
 
+    def publish_event
+      raise NotImplementedError
+    end
+
     def publish_events
       raise NotImplementedError
     end
@@ -49,13 +53,13 @@ module Pheme
     def send_message_batch(entries, sqs_client: Pheme.configuration.sqs_client)
       payload = {
         message: "#{self.class} publishing message batch to #{queue_url}",
-        body: entries,
+        entries: entries,
         publisher: self.class.to_s,
         queue_url: queue_url,
       }
       Pheme.logger.info(payload.to_json)
 
-      sqs_client.send_message_batch(queue_url: queue_url, entries: serialize(entries))
+      sqs_client.send_message_batch(queue_url: queue_url, entries: entries)
     end
 
     def serialize(message)
