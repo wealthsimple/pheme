@@ -1,4 +1,5 @@
 # pheme
+[![Github Actions Badge](https://github.com/wealthsimple/pheme/actions/workflows/main.yml/badge.svg)](https://github.com/wealthsimple/pheme/actions)
 
 [![GitHub Actions Workflow Badge](https://github.com/wealthsimple/pheme/actions/workflows/master-workflow.yml/badge.svg)](https://github.com/wealthsimple/pheme/actions)
 
