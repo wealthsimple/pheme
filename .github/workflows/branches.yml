@@ -3,7 +3,7 @@ name: Branches
 on:
   push:
     branches-ignore:
-      - master
+      - main
 jobs:
   build:
     name: Build
@@ -16,8 +16,8 @@ jobs:
         env:
           BUNDLE_GEMS__CONTRIBSYS__COM: ${{ secrets.BUNDLE_GEMS__CONTRIBSYS__COM }}
           BUNDLE_NEXUS__IAD__W10EXTERNAL__COM: ${{ secrets.BUNDLE_NEXUS__IAD__W10EXTERNAL__COM }}
-      - name: Fetch master branch
-        run: git fetch origin master
+      - name: Fetch main branch
+        run: git fetch origin main
       - name: Lint
         uses: wealthsimple/toolbox-script@v1
         with:
