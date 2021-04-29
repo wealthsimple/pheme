@@ -21,14 +21,12 @@ describe Pheme do
 
   it 'has a bumped version' do
     git = Git.open('.')
-    skip('already on master branch, no need to compare versions') if git.current_branch == 'master'
+    main_version = get_version(git, 'origin/main')
+    skip('first time publishing, no need to compare versions') if main_version.nil?
 
-    head_version = get_version(git, 'HEAD')
-    master_version = get_version(git, 'origin/master')
+    is_main_branch = git.current_branch == 'main'
+    skip('already on main branch, no need to compare versions') if is_main_branch
 
-    raise 'no version.rb file found on the current branch' if head_version.nil?
-    raise 'no version.rb file found on the master branch' if master_version.nil?
-
-    expect(Gem::Version.new(head_version)).to be > Gem::Version.new(master_version)
+    expect(Gem::Version.new(head_version)).to be > Gem::Version.new(main_version)
   end
 end
