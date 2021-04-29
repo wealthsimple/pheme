@@ -46,7 +46,6 @@ GEM
     jmespath (1.4.0)
     json (2.5.1)
     minitest (5.14.4)
-    nexus (1.4.0)
     parallel (1.20.1)
     parser (3.0.1.0)
       ast (~> 2.4.1)
@@ -107,16 +106,10 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     smarter_csv (1.2.8)
-    string-undump (0.0.2.1)
     thor (1.1.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
-    ws-gem_publisher (2.0.1)
-      git
-      nexus
-      rake
-      string-undump
     ws-style (6.9.0)
       rubocop (>= 1.12.1)
       rubocop-performance (>= 1.10.2)
@@ -139,7 +132,6 @@ DEPENDENCIES
   rspec-its
   rspec_junit_formatter (~> 0.2)
   simplecov
-  ws-gem_publisher
   ws-style
 
 BUNDLED WITH
