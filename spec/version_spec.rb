@@ -27,6 +27,9 @@ describe Pheme do
     is_main_branch = git.current_branch == 'main'
     skip('already on main branch, no need to compare versions') if is_main_branch
 
+    head_version = get_version(git, 'HEAD')
+    raise 'no version.rb file found on the current branch' if head_version.nil?
+
     expect(Gem::Version.new(head_version)).to be > Gem::Version.new(main_version)
   end
 end
