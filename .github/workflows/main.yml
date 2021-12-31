@@ -26,6 +26,14 @@ jobs:
         run: bundle exec rubocop
       - name: Test
         run: bundle exec rspec
+
+  # Separate `release` job from `build`, as we only want release to be run once
+  # and not run for each ruby version in the matrix:
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
       - name: Release the gem
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
