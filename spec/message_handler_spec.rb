@@ -3,7 +3,9 @@ describe Pheme::MessageHandler do
 
   before { use_default_configuration! }
 
-  let(:message) { RecursiveOpenStruct.new(status: status) }
+  # rubocop:disable RSpec/VerifiedDoubles
+  let(:message) { double(status: status) }
+  # rubocop:enable RSpec/VerifiedDoubles
   let(:timestamp) { '2018-04-17T21:45:05.915Z' }
 
   describe "#handle" do
