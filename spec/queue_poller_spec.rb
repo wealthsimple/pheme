@@ -5,7 +5,7 @@ describe Pheme::QueuePoller do
   let(:topic_arn) { 'arn:topic:test' }
 
   let!(:queue_message) do
-    OpenStruct.new(
+    ResourceStruct::FlexStruct.new(
       body: { Message: message }.to_json,
       message_id: message_id,
     )
@@ -57,7 +57,7 @@ describe Pheme::QueuePoller do
 
       before do
         allow(Aws::SQS::QueuePoller).to receive(:new).and_return(aws_poller)
-        allow(aws_poller).to receive(:before_request).and_yield(OpenStruct.new(received_message_count: max_messages))
+        allow(aws_poller).to receive(:before_request).and_yield(ResourceStruct::FlexStruct.new(received_message_count: max_messages))
       end
 
       it 'throws error' do
@@ -145,7 +145,7 @@ describe Pheme::QueuePoller do
 
     context 'when message attributes' do
       let(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: {
             Message: message,
             MessageAttributes: {
@@ -222,9 +222,7 @@ describe Pheme::QueuePoller do
       end
 
       it { is_expected.to have(2).items }
-      # rubocop:disable Vendor/RecursiveOpenStructUse
-      it { is_expected.to eq(RecursiveOpenStruct.new({ wrapper: expected_message }, recurse_over_arrays: true).wrapper) }
-      # rubocop:enable Vendor/RecursiveOpenStructUse
+      it { is_expected.to eq(ResourceStruct::FlexStruct.new({ wrapper: expected_message }).wrapper) }
     end
 
     context "with unknown message format" do
@@ -242,9 +240,7 @@ describe Pheme::QueuePoller do
 
       it { is_expected.to be_a(Array) }
       its(:first) { is_expected.to be_a(Array) }
-      # rubocop:disable Vendor/RecursiveOpenStructUse
-      its('first.first') { is_expected.to be_a(RecursiveOpenStruct) }
-      # rubocop:enable Vendor/RecursiveOpenStructUse
+      its('first.first') { is_expected.to be_a(ResourceStruct::FlexStruct) }
 
       it "parses the nested object" do
         expect(subject.first.first.test).to eq('test')
@@ -288,7 +284,7 @@ describe Pheme::QueuePoller do
         }
       }
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -321,7 +317,7 @@ describe Pheme::QueuePoller do
         }
       }
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -352,7 +348,7 @@ describe Pheme::QueuePoller do
         }
       end
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -365,9 +361,7 @@ describe Pheme::QueuePoller do
 
       it "handles the message" do
         expect(ExampleMessageHandler).to receive(:new).with(
-          # rubocop:disable Vendor/RecursiveOpenStructUse
-          message: RecursiveOpenStruct.new(message),
-          # rubocop:enable Vendor/RecursiveOpenStructUse
+          message: ResourceStruct::FlexStruct.new(message),
           metadata: { timestamp: timestamp, topic_arn: topic_arn },
           message_attributes: {},
         )
@@ -393,7 +387,7 @@ describe Pheme::QueuePoller do
         }
       end
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -422,7 +416,7 @@ describe Pheme::QueuePoller do
     context "AWS-event message" do
       subject { ExampleAwsEventQueuePoller.new(queue_url: queue_url) }
 
-      let(:queue_message) { OpenStruct.new(body: { 'Records' => records }.to_json) }
+      let(:queue_message) { ResourceStruct::FlexStruct.new(body: { 'Records' => records }.to_json) }
       let(:records) do
         [{ 'eventVersion' => '2.0', eventSource: 'aws:s3' }]
       end
@@ -443,7 +437,7 @@ describe Pheme::QueuePoller do
       let(:message) { { status: 'complete' } }
       let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )

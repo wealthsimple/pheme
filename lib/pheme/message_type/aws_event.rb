@@ -19,9 +19,7 @@ module Pheme
       end
 
       def parse_aws_event(message_contents)
-        # rubocop:disable Vendor/RecursiveOpenStructUse
-        RecursiveOpenStruct.new({ wrapper: message_contents }, recurse_over_arrays: true).wrapper
-        # rubocop:enable Vendor/RecursiveOpenStructUse
+        ResourceStruct::FlexStruct.new({ wrapper: message_contents }).wrapper
       end
     end
   end
