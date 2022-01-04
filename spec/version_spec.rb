@@ -4,8 +4,7 @@ describe Pheme do
   def get_version(git, branch = 'HEAD')
     git.grep('VERSION = ', 'lib/*/version.rb', { object: branch }).
       map { |_sha, matches| matches.first[1] }.
-      map { |version_string| parse_version(version_string) }.
-      reject(&:nil?).
+      filter_map { |version_string| parse_version(version_string) }.
       first
   end
 
