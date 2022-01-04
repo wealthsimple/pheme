@@ -222,7 +222,9 @@ describe Pheme::QueuePoller do
       end
 
       it { is_expected.to have(2).items }
+      # rubocop:todo Vendor/RecursiveOpenStructUse
       it { is_expected.to eq(RecursiveOpenStruct.new({ wrapper: expected_message }, recurse_over_arrays: true).wrapper) }
+      # rubocop:enable Vendor/RecursiveOpenStructUse
     end
 
     context "with unknown message format" do
@@ -240,7 +242,7 @@ describe Pheme::QueuePoller do
 
       it { is_expected.to be_a(Array) }
       its(:first) { is_expected.to be_a(Array) }
-      its('first.first') { is_expected.to be_a(RecursiveOpenStruct) }
+      its('first.first') { is_expected.to be_a(RecursiveOpenStruct) } # rubocop:todo Vendor/RecursiveOpenStructUse
 
       it "parses the nested object" do
         expect(subject.first.first.test).to eq('test')
@@ -361,7 +363,7 @@ describe Pheme::QueuePoller do
 
       it "handles the message" do
         expect(ExampleMessageHandler).to receive(:new).with(
-          message: RecursiveOpenStruct.new(message),
+          message: RecursiveOpenStruct.new(message), # rubocop:todo Vendor/RecursiveOpenStructUse
           metadata: { timestamp: timestamp, topic_arn: topic_arn },
           message_attributes: {},
         )

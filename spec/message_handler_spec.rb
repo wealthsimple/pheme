@@ -3,7 +3,7 @@ describe Pheme::MessageHandler do
 
   before { use_default_configuration! }
 
-  let(:message) { RecursiveOpenStruct.new(status: status) }
+  let(:message) { RecursiveOpenStruct.new(status: status) } # rubocop:todo Vendor/RecursiveOpenStructUse
   let(:timestamp) { '2018-04-17T21:45:05.915Z' }
 
   describe "#handle" do
