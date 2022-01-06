@@ -3,7 +3,8 @@ describe Pheme::MessageType::AwsEvent do
   let(:message_id) { SecureRandom.uuid }
   let(:queue_url) { 'http://queue_url' }
   let(:queue_message) do
-    OpenStruct.new(
+    instance_double(
+      Aws::SQS::Message,
       message_id: message_id,
       body: { 'Records' => records }.to_json,
       queue_url: queue_url,
