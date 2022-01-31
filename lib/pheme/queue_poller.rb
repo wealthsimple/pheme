@@ -127,16 +127,12 @@ module Pheme
 
     def parse_csv(message_contents)
       parsed_body = SmarterCSV.process(StringIO.new(message_contents))
-      # rubocop:disable Vendor/RecursiveOpenStructUse
-      parsed_body.map { |item| RecursiveOpenStruct.new(item, recurse_over_arrays: true) }
-      # rubocop:enable Vendor/RecursiveOpenStructUse
+      parsed_body.map { |item| ResourceStruct::FlexStruct.new(item) }
     end
 
     def parse_json(message_contents)
       parsed_body = JSON.parse(message_contents)
-      # rubocop:disable Vendor/RecursiveOpenStructUse
-      RecursiveOpenStruct.new({ wrapper: parsed_body }, recurse_over_arrays: true).wrapper
-      # rubocop:enable Vendor/RecursiveOpenStructUse
+      ResourceStruct::FlexStruct.new({ wrapper: parsed_body }).wrapper
     end
 
     def handle(message, metadata, message_attributes)

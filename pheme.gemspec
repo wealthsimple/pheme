@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport", ">= 4"
   s.add_dependency "aws-sdk-sns", "~> 1.1"
   s.add_dependency "aws-sdk-sqs", "~> 1.3"
-  s.add_dependency "recursive-open-struct", "~> 1"
+  s.add_dependency "resource-struct"
   s.add_dependency "smarter_csv", "~> 1"
 
   s.add_development_dependency 'bundler'

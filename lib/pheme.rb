@@ -1,5 +1,5 @@
 require 'active_support/all'
-require 'recursive-open-struct'
+require 'resource-struct'
 require 'aws-sdk-sns'
 require 'aws-sdk-sqs'
 require 'securerandom'
