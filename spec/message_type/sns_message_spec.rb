@@ -22,7 +22,7 @@ describe Pheme::MessageType::SnsMessage do
 
   describe "#parse_message" do
     context "with JSON message" do
-      let!(:message) { OpenStruct.new({ body: '{"Message":"{\"test\":\"test\"}"}' }) }
+      let!(:message) { ResourceStruct::FlexStruct.new({ body: '{"Message":"{\"test\":\"test\"}"}' }) }
 
       it 'parses the message correctly' do
         expect(subject.parse_body(message).test).to eq("test")
