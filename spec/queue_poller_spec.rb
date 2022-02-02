@@ -5,7 +5,7 @@ describe Pheme::QueuePoller do
   let(:topic_arn) { 'arn:topic:test' }
 
   let!(:queue_message) do
-    OpenStruct.new(
+    ResourceStruct::FlexStruct.new(
       body: { Message: message }.to_json,
       message_id: message_id,
     )
@@ -57,7 +57,7 @@ describe Pheme::QueuePoller do
 
       before do
         allow(Aws::SQS::QueuePoller).to receive(:new).and_return(aws_poller)
-        allow(aws_poller).to receive(:before_request).and_yield(OpenStruct.new(received_message_count: max_messages))
+        allow(aws_poller).to receive(:before_request).and_yield(ResourceStruct::FlexStruct.new(received_message_count: max_messages))
       end
 
       it 'throws error' do
@@ -145,7 +145,7 @@ describe Pheme::QueuePoller do
 
     context 'when message attributes' do
       let(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: {
             Message: message,
             MessageAttributes: {
@@ -284,7 +284,7 @@ describe Pheme::QueuePoller do
         }
       }
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -317,7 +317,7 @@ describe Pheme::QueuePoller do
         }
       }
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -348,7 +348,7 @@ describe Pheme::QueuePoller do
         }
       end
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -387,7 +387,7 @@ describe Pheme::QueuePoller do
         }
       end
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
@@ -416,7 +416,7 @@ describe Pheme::QueuePoller do
     context "AWS-event message" do
       subject { ExampleAwsEventQueuePoller.new(queue_url: queue_url) }
 
-      let(:queue_message) { OpenStruct.new(body: { 'Records' => records }.to_json) }
+      let(:queue_message) { ResourceStruct::FlexStruct.new(body: { 'Records' => records }.to_json) }
       let(:records) do
         [{ 'eventVersion' => '2.0', eventSource: 'aws:s3' }]
       end
@@ -437,7 +437,7 @@ describe Pheme::QueuePoller do
       let(:message) { { status: 'complete' } }
       let(:notification) { { 'MessageId' => SecureRandom.uuid, 'Message' => message.to_json, 'Type' => 'Notification', 'Timestamp' => timestamp } }
       let!(:queue_message) do
-        OpenStruct.new(
+        ResourceStruct::FlexStruct.new(
           body: notification.to_json,
           message_id: message_id,
         )
