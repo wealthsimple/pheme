@@ -6,19 +6,18 @@ require 'pheme/version'
 Gem::Specification.new do |s|
   raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.' unless s.respond_to?(:metadata)
 
-  s.name          = 'pheme'
-  s.version       = Pheme::VERSION
-  s.authors       = ['Peter Graham']
-  s.email         = ['peter@wealthsimple.com']
-  s.description   = 'Ruby AWS SNS publisher + SQS poller & message handler'
-  s.summary       = 'Ruby SNS publisher + SQS poller & message handler'
-  s.homepage      = 'https://github.com/wealthsimple/pheme'
+  s.name = 'pheme'
+  s.version = Pheme::VERSION
+  s.authors = ['Peter Graham']
+  s.email = ['peter@wealthsimple.com']
+  s.description = 'Ruby AWS SNS publisher + SQS poller & message handler'
+  s.summary = 'Ruby SNS publisher + SQS poller & message handler'
+  s.homepage = 'https://github.com/wealthsimple/pheme'
 
-  s.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
-  s.executables   = s.files.grep(%r{^bin/}).map { |f| File.basename(f) }
-  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
+  s.files = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
+  s.executables = s.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   s.require_paths = ['lib']
-  s.license       = 'MIT'
+  s.license = 'MIT'
 
   s.required_ruby_version = '>= 2.7.3'
 
