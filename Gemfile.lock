@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pheme (5.0.10)
+    pheme (5.1.0)
       activesupport (>= 4)
       aws-sdk-sns (~> 1.1)
       aws-sdk-sqs (~> 1.3)
@@ -134,4 +134,4 @@ DEPENDENCIES
   ws-style
 
 BUNDLED WITH
-   2.3.16
+   2.3.14

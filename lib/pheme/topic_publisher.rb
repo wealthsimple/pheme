@@ -34,7 +34,11 @@ module Pheme
       raise NotImplementedError
     end
 
-    def publish(message, sns_client: Pheme.configuration.sns_client, message_attributes: nil)
+    def publish(message,
+                sns_client: Pheme.configuration.sns_client,
+                message_attributes: nil,
+                message_deduplication_id: nil,
+                message_group_id: nil)
       payload = {
         message: "#{self.class} publishing message to #{topic_arn}",
         body: message,
@@ -43,7 +47,13 @@ module Pheme
       }
       Pheme.logger.info(payload.to_json)
 
-      sns_client.publish(topic_arn: topic_arn, message: serialize(message), message_attributes: message_attributes)
+      sns_client.publish(
+        topic_arn: topic_arn,
+        message: serialize(message),
+        message_attributes: message_attributes,
+        message_deduplication_id: message_deduplication_id,
+        message_group_id: message_group_id,
+      )
     end
 
     def serialize(message)
