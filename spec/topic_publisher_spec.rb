@@ -37,11 +37,15 @@ describe Pheme::TopicPublisher do
         topic_arn: "arn:aws:sns:whatever",
         message: { id: "id-0", status: "complete" }.to_json,
         message_attributes: nil,
+        message_deduplication_id: nil,
+        message_group_id: nil,
       })
       expect(Pheme.configuration.sns_client).to receive(:publish).with({
         topic_arn: "arn:aws:sns:whatever",
         message: { id: "id-1", status: "complete" }.to_json,
         message_attributes: nil,
+        message_deduplication_id: nil,
+        message_group_id: nil,
       })
       subject.publish_events
     end
@@ -57,6 +61,8 @@ describe Pheme::TopicPublisher do
           topic_arn: topic_arn,
           message: message,
           message_attributes: nil,
+          message_deduplication_id: nil,
+          message_group_id: nil,
         })
         subject.publish(message)
       end
@@ -69,6 +75,8 @@ describe Pheme::TopicPublisher do
             topic_arn: topic_arn,
             message: message,
             message_attributes: nil,
+            message_deduplication_id: nil,
+            message_group_id: nil,
           })
           subject.publish(message, sns_client: sns_client)
         end
@@ -94,6 +102,8 @@ describe Pheme::TopicPublisher do
               topic_arn: topic_arn,
               message: compressed_message,
               message_attributes: nil,
+              message_deduplication_id: nil,
+              message_group_id: nil,
             }),
         )
 
