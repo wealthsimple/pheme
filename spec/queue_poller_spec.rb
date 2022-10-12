@@ -52,7 +52,7 @@ describe Pheme::QueuePoller do
     context 'received too many messages' do
       subject { described_class.new(queue_url: queue_url, max_messages: max_messages) }
 
-      let(:aws_poller) { instance_double('Aws::SQS::QueuePoller') }
+      let(:aws_poller) { instance_double(Aws::SQS::QueuePoller) }
       let(:max_messages) { 50 }
 
       before do

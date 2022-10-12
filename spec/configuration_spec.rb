@@ -34,8 +34,8 @@ describe Pheme do
       end
 
       context 'all mandatory attributes provided' do
-        let(:sns_client) { instance_double('Aws::SNS::Client') }
-        let(:sqs_client) { instance_double('Aws::SQS::Client') }
+        let(:sns_client) { instance_double(Aws::SNS::Client) }
+        let(:sqs_client) { instance_double(Aws::SQS::Client) }
 
         before do
           allow(sns_client).to receive(:is_a?).with(Aws::SNS::Client).and_return(true)
