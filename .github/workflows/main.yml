@@ -9,10 +9,10 @@ concurrency:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        ruby-version: [2.7.7, 3.2.0]
+        ruby-version: [2.7.7, 3.2.1]
     steps:
       - uses: actions/checkout@v2
         with:
