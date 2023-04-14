@@ -29,4 +29,4 @@ def use_default_configuration!
   end
 end
 
-Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
+Dir["./spec/support/**/*.rb"].each { |f| require f }
