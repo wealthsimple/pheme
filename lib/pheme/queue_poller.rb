@@ -8,14 +8,14 @@ module Pheme
     attr_accessor :queue_url, :queue_poller, :connection_pool_block, :format, :max_messages, :poller_configuration
 
     def initialize(queue_url:,
-                   connection_pool_block: false,
-                   max_messages: nil,
-                   format: :json,
-                   poller_configuration: {},
-                   sqs_client: nil,
-                   idle_timeout: nil,
-                   message_handler: nil,
-                   &block_message_handler)
+      connection_pool_block: false,
+      max_messages: nil,
+      format: :json,
+      poller_configuration: {},
+      sqs_client: nil,
+      idle_timeout: nil,
+      message_handler: nil,
+      &block_message_handler)
       raise ArgumentError, "must specify non-nil queue_url" if queue_url.blank?
 
       @queue_url = queue_url
