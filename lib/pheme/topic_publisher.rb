@@ -35,10 +35,10 @@ module Pheme
     end
 
     def publish(message,
-                sns_client: Pheme.configuration.sns_client,
-                message_attributes: nil,
-                message_deduplication_id: nil,
-                message_group_id: nil)
+      sns_client: Pheme.configuration.sns_client,
+      message_attributes: nil,
+      message_deduplication_id: nil,
+      message_group_id: nil)
       payload = {
         message: "#{self.class} publishing message to #{topic_arn}",
         body: message,

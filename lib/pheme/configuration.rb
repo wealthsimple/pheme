@@ -22,7 +22,7 @@ module Pheme
     attr_accessor(*ATTRIBUTES, *OPTIONAL_ATTRIBUTES)
 
     def initialize
-      @logger ||= Logger.new(STDOUT) # rubocop:disable Lint/DisjunctiveAssignmentInConstructor
+      @logger ||= Logger.new($stdout) # rubocop:disable Lint/DisjunctiveAssignmentInConstructor
       @logger = ActiveSupport::TaggedLogging.new(@logger) unless @logger.respond_to?(:tagged)
     end
 
