@@ -6,4 +6,4 @@ inherit_gem:
 
 AllCops:
   # Specify your target Ruby version here (only major/minor versions):
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.2
