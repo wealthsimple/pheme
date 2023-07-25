@@ -14,6 +14,8 @@ Gem::Specification.new do |s|
   s.summary = 'Ruby SNS publisher + SQS poller & message handler'
   s.homepage = 'https://github.com/wealthsimple/pheme'
 
+  s.metadata['changelog_uri'] = 'https://github.com/wealthsimple/pheme/blob/main/CHANGELOG.md'
+
   s.files = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
   s.executables = s.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   s.require_paths = ['lib']
