@@ -91,7 +91,7 @@ module Pheme
         parsed_content = parse_json(raw_content)
         body['Message'] = parsed_content
       else
-        method_name = "parse_#{format}".to_sym
+        method_name = :"parse_#{format}"
         raise ArgumentError, "Unknown format #{format}" unless respond_to?(method_name)
 
         parsed_content = __send__(method_name, raw_content)
