@@ -14,6 +14,7 @@ module Pheme
       poller_configuration: {},
       sqs_client: nil,
       idle_timeout: nil,
+      visibility_timeout: nil,
       message_handler: nil,
       &block_message_handler)
       raise ArgumentError, "must specify non-nil queue_url" if queue_url.blank?
@@ -28,10 +29,12 @@ module Pheme
       @poller_configuration = {
         wait_time_seconds: 10, # amount of time a long polling receive call can wait for a message before receiving a empty response (which will trigger another polling request)
         idle_timeout: 20, # disconnects poller after 20 seconds of idle time
+        visibility_timeout: 30, # amount of time to process and delete the message before it is added back into the queue
         skip_delete: true, # manually delete messages
       }.merge(poller_configuration || {})
 
       @poller_configuration[:idle_timeout] = idle_timeout unless idle_timeout.nil?
+      @poller_configuration[:visibility_timeout] = visibility_timeout unless visibility_timeout.nil?
 
       if message_handler
         if message_handler.ancestors.include?(Pheme::MessageHandler)
