@@ -5,7 +5,7 @@ module Pheme
   class QueuePoller
     include Compression
 
-    attr_accessor :queue_url, :queue_poller, :connection_pool_block, :format, :max_messages, :poller_configuration
+    attr_accessor :queue_url, :queue_poller, :sqs_client, :connection_pool_block, :format, :max_messages, :poller_configuration
 
     def initialize(queue_url:,
       connection_pool_block: false,
@@ -19,6 +19,7 @@ module Pheme
       raise ArgumentError, "must specify non-nil queue_url" if queue_url.blank?
 
       @queue_url = queue_url
+      @sqs_client = sqs_client
       @queue_poller = Aws::SQS::QueuePoller.new(queue_url, client: sqs_client)
       @connection_pool_block = connection_pool_block
       @messages_processed = 0
@@ -58,10 +59,7 @@ module Pheme
       queue_poller.poll(poller_configuration) do |queue_message|
         @messages_received += 1
         Pheme.logger.tagged(queue_message.message_id) do
-          content = parse_body(queue_message)
-          metadata = parse_metadata(queue_message)
-          message_attributes = parse_message_attributes(queue_message)
-          with_optional_connection_pool_block { handle(content, metadata, message_attributes) }
+          with_optional_connection_pool_block { handle_internal(queue_message) }
           queue_poller.delete_message(queue_message)
           log_delete(queue_message)
           @messages_processed += 1
@@ -69,7 +67,7 @@ module Pheme
           throw :stop_polling
         rescue StandardError => e
           Pheme.logger.error(e)
-          Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
+          Pheme.rollbar(e, "#{self.class} failed to process message", { message: queue_message.body })
         end
       end
       log_polling_end(time_start)
@@ -135,17 +133,23 @@ module Pheme
       ResourceStruct::FlexStruct.new({ wrapper: parsed_body }).wrapper
     end
 
-    def handle(message, metadata, message_attributes)
-      if @message_handler
-        @message_handler.new(message: message, metadata: metadata, message_attributes: message_attributes).handle
+    private
+
+    def handle_internal(queue_message)
+      content = parse_body(queue_message)
+      metadata = parse_metadata(queue_message)
+      message_attributes = parse_message_attributes(queue_message)
+
+      if methods.include?(:handle)
+        handle(content, metadata, message_attributes)
+      elsif @message_handler
+        @message_handler.new(queue_message: queue_message, message: content, metadata: metadata, message_attributes: message_attributes, queue_url: queue_url).handle
       elsif @block_message_handler
         @block_message_handler.call(message, metadata, message_attributes)
       else
         raise NotImplementedError
       end
     end
-
-    private
 
     def coerce_message_attribute(value)
       case value['Type']
