@@ -29,7 +29,7 @@ module Pheme
       @poller_configuration = {
         wait_time_seconds: 10, # amount of time a long polling receive call can wait for a message before receiving a empty response (which will trigger another polling request)
         idle_timeout: 20, # disconnects poller after 20 seconds of idle time
-        visibility_timeout: 30, # amount of time to process and delete the message before it is added back into the queue
+        visibility_timeout: nil, # amount of time to process and delete the message before it is added back into the queue
         skip_delete: true, # manually delete messages
       }.merge(poller_configuration || {})
 
