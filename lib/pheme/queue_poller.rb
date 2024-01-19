@@ -34,7 +34,7 @@ module Pheme
       }.merge(poller_configuration || {})
 
       @poller_configuration[:idle_timeout] = idle_timeout unless idle_timeout.nil?
-      @poller_configuration[:visibility_timeout] = visibility_timeout unless visibility_timeout.nil?
+      @poller_configuration[:visibility_timeout] = visibility_timeout
 
       if message_handler
         if message_handler.ancestors.include?(Pheme::MessageHandler)
