@@ -45,7 +45,8 @@ module Pheme
         publisher: self.class.to_s,
         topic_arn: topic_arn,
       }
-      Pheme.logger.info(payload.to_json)
+
+      Pheme.logger.info(payload.except(:body).to_json)
 
       sns_client.publish(
         topic_arn: topic_arn,

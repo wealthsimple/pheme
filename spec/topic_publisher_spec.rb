@@ -47,6 +47,15 @@ describe Pheme::TopicPublisher do
         message_deduplication_id: nil,
         message_group_id: nil,
       })
+      expect(Pheme.logger).to(
+        receive(:info).with(
+          {
+            message: "ExamplePublisher publishing message to arn:aws:sns:whatever",
+            publisher: "ExamplePublisher",
+            topic_arn: "arn:aws:sns:whatever",
+          }.to_json,
+        ).twice,
+      )
       subject.publish_events
     end
 
@@ -64,6 +73,15 @@ describe Pheme::TopicPublisher do
           message_deduplication_id: nil,
           message_group_id: nil,
         })
+        expect(Pheme.logger).to(
+          receive(:info).with(
+            {
+              message: "Pheme::TopicPublisher publishing message to #{topic_arn}",
+              publisher: "Pheme::TopicPublisher",
+              topic_arn: topic_arn,
+            }.to_json,
+          ),
+        )
         subject.publish(message)
       end
 
@@ -78,6 +96,15 @@ describe Pheme::TopicPublisher do
             message_deduplication_id: nil,
             message_group_id: nil,
           })
+          expect(Pheme.logger).to(
+            receive(:info).with(
+              {
+                message: "Pheme::TopicPublisher publishing message to #{topic_arn}",
+                publisher: "Pheme::TopicPublisher",
+                topic_arn: topic_arn,
+              }.to_json,
+            ),
+          )
           subject.publish(message, sns_client: sns_client)
         end
       end
