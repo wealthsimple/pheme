@@ -1,3 +1,3 @@
 module Pheme
-  VERSION = '5.2.15'.freeze
+  VERSION = '5.2.16'.freeze
 end
