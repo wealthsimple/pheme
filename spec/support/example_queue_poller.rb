@@ -1,6 +1,6 @@
 class ExampleQueuePoller < Pheme::QueuePoller
-  def initialize(queue_url: 'http://mock_url.test', **kwargs)
-    super(queue_url: queue_url, **kwargs)
+  def initialize(queue_url: 'http://mock_url.test', **)
+    super
   end
 
   def handle(message, metadata, message_attributes)
