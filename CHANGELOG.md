@@ -1,8 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Unreleased
+
+## 5.3.4 - 2024-06-14
+### Changed
+- Updated dependencies
 
 ## 5.3.3 - 2024-06-14
 ### Changed
@@ -169,7 +175,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated dependencies
 
-### 5.0.4 - 2022-04-01
+## 5.0.4 - 2022-04-01
 ### Changed
 - Updated workflows
 
@@ -246,17 +252,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate CI from CircleCI to GitHub Actions
 
 ## 4.0.3 - 2021-03-08
+### Changed
 - Update documentation to include instructions on directly publishing to SQS
 
 ## 4.0.2 - 2020-12-17
+### Changed
 - Bump local dev version, rubocop fixes, add backstage catalog file + sonarqube project settings
 
 ## 4.0.1 - 2020-03-23
-### Fixes
+### Fixed
 - Fixes 4.0.0. Instead of expecting message attributes in the message from `poll`, retrieves them from the right place.
 
 ## 4.0.0 - 2020-03-18
-### Breaking Changes
+### Changed
 - Add the ability for SQS to receive message attributes
 - `handle` function of `QueuePoller` now takes a third parameter `message_attributes`
 - blocks or `MessageHandler`s passed to `QueuePoller` can use this `message_attributes`
@@ -302,6 +310,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2.0.1 - 2019-01-03
 ### Changed
 - add internal gem spec to test standard gem behavior, reduces unnecessary copy and pasting
+
 ### Fixed
 - namespace for the VERSION constant was incorrectly set to Ws::Ws
 
