@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 6.0.0 - 2024-07-04
+### Changed
+- Removed support for Rollbar configuration.
+- Added support for passing `error_reporting` as a config option.
+```ruby
+Pheme.configure do |config|
+  config.sqs_client = AWS_SQS_CLIENT
+  config.sns_client = AWS_SNS_CLIENT
+  config.error_reporting = Ws::Railway::ErrorReporting
+end
+```
+
 ## 5.3.4 - 2024-06-14
 ### Changed
 - Updated dependencies
