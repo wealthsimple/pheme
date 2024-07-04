@@ -34,6 +34,8 @@ Pheme.configure do |config|
   config.sqs_client = AWS_SQS_CLIENT
   config.sns_client = AWS_SNS_CLIENT
   config.logger = Logger.new(STDOUT) # Optionally replace with your app logger, e.g. `Rails.logger`
+  
+  config.error_reporting = Ws::Railway::ErrorReporting
 end
 ```
 
