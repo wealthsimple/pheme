@@ -1,5 +1,5 @@
 RSpec.describe Pheme do
-  let(:ws_railway_error_reporting) { double }
+  let(:error_reporting_func) { double }
 
   describe '.capture_exception' do
     subject { described_class.capture_exception(exception, message, data) }
@@ -10,12 +10,12 @@ RSpec.describe Pheme do
 
     before do
       described_class.configure do |config|
-        config.error_reporting = ws_railway_error_reporting
+        config.error_reporting_func = error_reporting_func
       end
     end
 
-    it 'sends error message to Ws::Railway::ErrorReporting' do
-      expect(ws_railway_error_reporting).to receive(:capture_exception).with(exception, message, data)
+    it 'sends error message to configured error_reporter' do
+      expect(error_reporting_func).to receive(:call).with(exception, message, data)
       subject
     end
   end

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 6.0.0 - 2024-07-04
 ### Changed
 - Removed support for Rollbar configuration.
-- Added support for passing `error_reporting` as a config option.
+- Added support for passing `error_reporting_func` as a config option.
 
 ## 5.3.4 - 2024-06-14
 ### Changed

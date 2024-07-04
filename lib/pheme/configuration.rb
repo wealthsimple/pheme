@@ -17,7 +17,7 @@ module Pheme
 
   class Configuration
     ATTRIBUTES = %i[sns_client sqs_client logger].freeze
-    OPTIONAL_ATTRIBUTES = %i[error_reporting].freeze
+    OPTIONAL_ATTRIBUTES = %i[error_reporting_func].freeze
 
     attr_accessor(*ATTRIBUTES, *OPTIONAL_ATTRIBUTES)
 

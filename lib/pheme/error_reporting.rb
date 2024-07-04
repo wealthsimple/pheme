@@ -1,7 +1,7 @@
 module Pheme
   def self.capture_exception(exception, message, data = {})
-    return if configuration.error_reporting.nil?
+    return if configuration.error_reporting_func.nil?
 
-    configuration.error_reporting.capture_exception(exception, message, data)
+    configuration.error_reporting_func.call(exception, message, data)
   end
 end
