@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ## 6.0.0 - 2024-07-04
-### Changed
-- Removed support for Rollbar configuration.
+### BREAKING CHANGE
+- Removed support for Rollbar configuration. `config.rollbar` is no longer supported.
 - Added support for passing `error_reporting_func` as a config option.
 
 ## 5.3.4 - 2024-06-14

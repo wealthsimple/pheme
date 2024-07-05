@@ -24,6 +24,10 @@ module Pheme
     def initialize
       @logger ||= Logger.new($stdout) # rubocop:disable Lint/DisjunctiveAssignmentInConstructor
       @logger = ActiveSupport::TaggedLogging.new(@logger) unless @logger.respond_to?(:tagged)
+
+      if respond_to?(:rollbar)
+        ActiveSupport::Deprecation.warn("config.rollbar is deprecated. Please use config.error_reporting_func instead.")
+      end
     end
 
     def validate!
