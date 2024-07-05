@@ -49,6 +49,26 @@ describe Pheme do
           expect { subject }.not_to raise_error
         end
       end
+
+      context 'deprecated attributes' do
+        let(:sns_client) { instance_double(Aws::SNS::Client) }
+        let(:sqs_client) { instance_double(Aws::SQS::Client) }
+
+        before do
+          allow(sns_client).to receive(:is_a?).with(Aws::SNS::Client).and_return(true)
+          allow(sqs_client).to receive(:is_a?).with(Aws::SQS::Client).and_return(true)
+
+          configuration.sns_client = sns_client
+          configuration.sqs_client = sqs_client
+          configuration.rollbar = double
+        end
+
+        it "warns if passed a deprecated config attribute" do
+          expect(configuration.logger).to receive(:warn).with("config.rollbar is deprecated. Please use config.error_reporting_func instead.")
+
+          expect { subject }.not_to raise_error
+        end
+      end
     end
   end
 end
