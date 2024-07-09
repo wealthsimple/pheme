@@ -17,9 +17,10 @@ module Pheme
 
   class Configuration
     ATTRIBUTES = %i[sns_client sqs_client logger].freeze
-    OPTIONAL_ATTRIBUTES = %i[rollbar].freeze
+    OPTIONAL_ATTRIBUTES = %i[error_reporting_func].freeze
+    DEPRECATED_ATTRIBUTES = %i[rollbar].freeze
 
-    attr_accessor(*ATTRIBUTES, *OPTIONAL_ATTRIBUTES)
+    attr_accessor(*ATTRIBUTES, *OPTIONAL_ATTRIBUTES, *DEPRECATED_ATTRIBUTES)
 
     def initialize
       @logger ||= Logger.new($stdout) # rubocop:disable Lint/DisjunctiveAssignmentInConstructor
@@ -32,6 +33,10 @@ module Pheme
       end
       raise "sns_client must be a Aws::SNS::Client" unless sns_client.is_a?(Aws::SNS::Client)
       raise "sns_client must be a Aws::SQS::Client" unless sqs_client.is_a?(Aws::SQS::Client)
+
+      if respond_to?(:rollbar)
+        @logger.warn("config.rollbar is deprecated. Please use config.error_reporting_func instead.")
+      end
     end
   end
 end

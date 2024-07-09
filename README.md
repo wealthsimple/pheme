@@ -34,6 +34,13 @@ Pheme.configure do |config|
   config.sqs_client = AWS_SQS_CLIENT
   config.sns_client = AWS_SNS_CLIENT
   config.logger = Logger.new(STDOUT) # Optionally replace with your app logger, e.g. `Rails.logger`
+  
+  # Internal wealthsimple error handler
+  config.error_reporting_func = Ws::Railway::ErrorReporting.capture_exception
+  # Sentry
+  config.error_reporting_func = Sentry.capture_exception
+  # Rollbar
+  config.error_reporting_func = Rollbar.error
 end
 ```
 

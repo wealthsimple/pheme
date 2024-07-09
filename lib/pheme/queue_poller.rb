@@ -69,7 +69,7 @@ module Pheme
           throw :stop_polling
         rescue StandardError => e
           Pheme.logger.error(e)
-          Pheme.rollbar(e, "#{self.class} failed to process message", { message: content })
+          Pheme.capture_exception(e, "#{self.class} failed to process message", { message: content })
         end
       end
       log_polling_end(time_start)
