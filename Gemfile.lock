@@ -78,7 +78,7 @@ GEM
     rchardet (1.8.0)
     regexp_parser (2.9.2)
     resource-struct (0.4.0)
-    rexml (3.3.2)
+    rexml (3.3.4)
       strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
