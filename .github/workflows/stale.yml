@@ -5,7 +5,7 @@ on:
 
 jobs:
   stale:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ vars.DEFAULT_RUNS_ON }}
     steps:
       - uses: actions/stale@v8
         with:
