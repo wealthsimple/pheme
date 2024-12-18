@@ -136,6 +136,19 @@ module Pheme
     end
 
     def handle(message, metadata, message_attributes)
+      if defined?(Datadog::Tracing.trace)
+        handler_name = @message_handler&.name || "block"
+        Datadog::Tracing.trace('pheme.job', resource: handler_name) do |span|
+          _handle(message, metadata, message_attributes)
+        end
+      else
+        _handle(message, metadata, message_attributes)
+      end
+    end
+
+    private
+
+    def _handle(message, metadata, message_attributes)
       if @message_handler
         @message_handler.new(message: message, metadata: metadata, message_attributes: message_attributes).handle
       elsif @block_message_handler
@@ -144,8 +157,6 @@ module Pheme
         raise NotImplementedError
       end
     end
-
-    private
 
     def coerce_message_attribute(value)
       case value['Type']

@@ -20,22 +20,11 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.license = 'MIT'
 
-  s.required_ruby_version = '>= 3.1'
+  s.required_ruby_version = '>= 3.3'
 
   s.add_dependency 'activesupport', '>= 4'
   s.add_dependency 'aws-sdk-sns', '~> 1.1'
   s.add_dependency 'aws-sdk-sqs', '~> 1.3'
   s.add_dependency 'resource-struct', '~> 0.4'
   s.add_dependency 'smarter_csv', '~> 1'
-
-  s.add_development_dependency 'bundler'
-  s.add_development_dependency 'git'
-  s.add_development_dependency "parse_a_changelog"
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rspec-collection_matchers'
-  s.add_development_dependency 'rspec-its'
-  s.add_development_dependency 'rspec_junit_formatter', '~> 0.2'
-  s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'ws-style'
 end
