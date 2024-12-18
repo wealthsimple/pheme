@@ -27,4 +27,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'aws-sdk-sqs', '~> 1.3'
   s.add_dependency 'resource-struct', '~> 0.4'
   s.add_dependency 'smarter_csv', '~> 1'
+  s.add_dependency 'nokogiri', '~> 1.17'
 end
