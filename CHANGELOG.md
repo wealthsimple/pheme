@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 6.0.1 - 2025-02-13
+### Changed
+- Updated dependencies
+- Added rexml as explicit dependency
+
 ## 6.0.0 - 2024-07-04
 ### Changed
 - **breaking changes** Removed support for Rollbar configuration. `config.rollbar` is no longer supported.
