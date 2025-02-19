@@ -36,11 +36,11 @@ Pheme.configure do |config|
   config.logger = Logger.new(STDOUT) # Optionally replace with your app logger, e.g. `Rails.logger`
   
   # Internal wealthsimple error handler
-  config.error_reporting_func = Ws::Railway::ErrorReporting.capture_exception
+  config.error_reporting_func = Ws::Railway::ErrorReporting.method(:capture_exception)
   # Sentry
-  config.error_reporting_func = Sentry.capture_exception
+  config.error_reporting_func = Sentry.method(:capture_exception)
   # Rollbar
-  config.error_reporting_func = Rollbar.error
+  config.error_reporting_func = Rollbar.method(:error)
 end
 ```
 
